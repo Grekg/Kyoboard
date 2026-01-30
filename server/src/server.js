@@ -55,7 +55,12 @@ app.use(cookieParser());
 
 // Serve static frontend files in production
 if (process.env.NODE_ENV === "production") {
-  app.use(express.static(path.join(__dirname, "../../")));
+  // Docker uses ./public, non-Docker uses ../../
+  const fs = require("fs");
+  const publicPath = fs.existsSync(path.join(__dirname, "../public"))
+    ? path.join(__dirname, "../public")
+    : path.join(__dirname, "../../");
+  app.use(express.static(publicPath));
 }
 
 // API routes
@@ -73,16 +78,21 @@ initializeSocket(io);
 
 // Serve index.html for SPA routes in production
 if (process.env.NODE_ENV === "production") {
+  const fs = require("fs");
+  const publicPath = fs.existsSync(path.join(__dirname, "../public"))
+    ? path.join(__dirname, "../public")
+    : path.join(__dirname, "../../");
+
   app.get("*", (req, res, next) => {
     // Skip API routes
     if (req.path.startsWith("/api")) {
       return next();
     }
     // Check if file exists, otherwise serve 404.html
-    const filePath = path.join(__dirname, "../../", req.path);
+    const filePath = path.join(publicPath, req.path);
     res.sendFile(filePath, (err) => {
       if (err) {
-        res.sendFile(path.join(__dirname, "../../404.html"));
+        res.sendFile(path.join(publicPath, "404.html"));
       }
     });
   });
@@ -92,7 +102,11 @@ if (process.env.NODE_ENV === "production") {
 app.use((err, req, res, next) => {
   console.error("Server error:", err);
   if (process.env.NODE_ENV === "production") {
-    return res.status(500).sendFile(path.join(__dirname, "../../500.html"));
+    const fs = require("fs");
+    const publicPath = fs.existsSync(path.join(__dirname, "../public"))
+      ? path.join(__dirname, "../public")
+      : path.join(__dirname, "../../");
+    return res.status(500).sendFile(path.join(publicPath, "500.html"));
   }
   res.status(500).json({ error: "Internal server error" });
 });

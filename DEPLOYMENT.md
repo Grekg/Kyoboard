@@ -1,226 +1,290 @@
-# Kyoboard Deployment Guide - DigitalOcean
+# Kyoboard Deployment Guide - Docker on DigitalOcean Droplet
 
-This guide covers deploying Kyoboard to DigitalOcean App Platform.
+This guide covers deploying Kyoboard to a DigitalOcean Droplet using Docker Compose.
+
+## Architecture Overview
+
+```
+                         ┌─────────────────┐
+     Internet ──────────▶│     Nginx       │
+        (443)            │  (SSL + Proxy)  │
+                         └────────┬────────┘
+                                  │
+                                  ▼ (port 3000)
+                         ┌─────────────────┐
+                         │   Docker App    │──────▶ PostgreSQL
+                         │   (Node.js)     │       (Docker Volume)
+                         └─────────────────┘
+```
+
+---
 
 ## Prerequisites
 
-1. **DigitalOcean Account** with billing enabled
-2. **GitHub Repository** with your Kyoboard code pushed
-3. **PostgreSQL Database** (we'll create this on DigitalOcean)
+- DigitalOcean account
+- Domain name pointed to your Droplet IP
+- Basic SSH knowledge
 
 ---
 
-## Step 1: Create a PostgreSQL Database
+## Step 1: Create a Droplet
 
-1. Go to **DigitalOcean Dashboard → Databases → Create Database**
-2. Choose **PostgreSQL** (latest version)
-3. Select a plan:
-   - **Basic Node** ($15/month) for testing
-   - **Professional** for production
-4. Choose datacenter (same region you'll deploy the app)
-5. Name it `kyoboard-db`
-6. Click **Create Database Cluster**
-7. **Copy the Connection String** - you'll need this later
+1. Go to **DigitalOcean → Create → Droplet**
+2. Choose **Ubuntu 24.04 LTS**
+3. Select plan:
+   - **Basic** $6/month (1GB RAM) - OK for testing
+   - **Basic** $12/month (2GB RAM) - Recommended for production
+4. Choose datacenter region
+5. Add SSH key
+6. Create Droplet
 
 ---
 
-## Step 2: Deploy the App
-
-### Option A: App Platform (Recommended)
-
-1. Go to **DigitalOcean Dashboard → Apps → Create App**
-2. Connect your **GitHub** repository
-3. Select your Kyoboard repo and branch (usually `main`)
-4. Configure the app:
-
-#### Component Settings:
-
-| Setting          | Value                                                      |
-| ---------------- | ---------------------------------------------------------- |
-| Name             | `kyoboard`                                                 |
-| Source Directory | `server`                                                   |
-| Build Command    | `npm install && npx prisma generate && npx prisma db push` |
-| Run Command      | `npm start`                                                |
-| HTTP Port        | `3000`                                                     |
-
-#### Static Site Component (for frontend):
-
-1. Click **Add Component → Static Site**
-2. Configure:
-   - Source Directory: `/` (root)
-   - Output Directory: `/`
-   - Index Document: `index.html`
-
-### Option B: Droplet (Manual Server)
+## Step 2: Initial Server Setup
 
 ```bash
 # SSH into your droplet
 ssh root@your-droplet-ip
 
-# Install Node.js
-curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -
-sudo apt-get install -y nodejs
+# Update system
+apt update && apt upgrade -y
 
-# Clone your repo
-git clone https://github.com/yourusername/kyoboard.git
-cd kyoboard/server
+# Install Docker
+curl -fsSL https://get.docker.com -o get-docker.sh
+sh get-docker.sh
 
-# Install dependencies
-npm install
+# Install Docker Compose
+apt install docker-compose-plugin -y
 
-# Setup environment
-cp .env.example .env
-nano .env  # Edit with your production values
-
-# Run Prisma migrations
-npx prisma db push
-
-# Install PM2 for process management
-npm install -g pm2
-
-# Start the server
-pm2 start src/server.js --name kyoboard
-
-# Setup auto-restart on reboot
-pm2 startup
-pm2 save
+# Verify installation
+docker --version
+docker compose version
 ```
 
 ---
 
-## Step 3: Configure Environment Variables
-
-In DigitalOcean App Platform, add these environment variables:
-
-| Variable       | Value                                             | Description                            |
-| -------------- | ------------------------------------------------- | -------------------------------------- |
-| `NODE_ENV`     | `production`                                      | Enables production mode                |
-| `DATABASE_URL` | `postgresql://...`                                | Your database connection string        |
-| `JWT_SECRET`   | `your-super-long-random-string-at-least-64-chars` | Secret for JWT tokens                  |
-| `CLIENT_URL`   | `https://your-app-url.ondigitalocean.app`         | Your app's public URL                  |
-| `PORT`         | `3000`                                            | Server port (auto-set by App Platform) |
-
-### Generate a Secure JWT_SECRET:
+## Step 3: Clone and Configure
 
 ```bash
-# Option 1: Using Node.js
-node -e "console.log(require('crypto').randomBytes(64).toString('hex'))"
+# Clone your repository
+git clone https://github.com/yourusername/kyoboard.git
+cd kyoboard
 
-# Option 2: Using OpenSSL
+# Create environment file
+cp .env.example .env
+nano .env
+```
+
+### Edit .env with these values:
+
+```bash
+# Database
+POSTGRES_USER=kyoboard
+POSTGRES_PASSWORD=YOUR_STRONG_PASSWORD_HERE
+POSTGRES_DB=kyoboard
+
+# App
+JWT_SECRET=YOUR_64_CHAR_SECRET_HERE
+CLIENT_URL=https://yourdomain.com
+PORT=3000
+```
+
+**Generate JWT_SECRET:**
+
+```bash
 openssl rand -hex 64
 ```
 
 ---
 
-## Step 4: Database Migration
-
-After deployment, run Prisma migrations:
+## Step 4: Start Docker Containers
 
 ```bash
-# In App Platform console or via SSH
-cd server
-npx prisma db push
+# Build and start containers
+docker compose up -d --build
+
+# Check status
+docker compose ps
+
+# View logs
+docker compose logs -f app
 ```
 
 ---
 
-## Step 5: Verify Deployment
+## Step 5: Install & Configure Nginx
 
-1. **Check Health Endpoint:**
+```bash
+# Install Nginx
+apt install nginx -y
 
+# Copy config (use the nginx.conf from your repo)
+cp nginx.conf /etc/nginx/sites-available/kyoboard
+
+# Edit with your domain
+nano /etc/nginx/sites-available/kyoboard
+# Replace "yourdomain.com" with your actual domain
+
+# Enable site
+ln -s /etc/nginx/sites-available/kyoboard /etc/nginx/sites-enabled/
+rm /etc/nginx/sites-enabled/default
+
+# Test config
+nginx -t
+
+# Restart Nginx
+systemctl restart nginx
+```
+
+---
+
+## Step 6: Setup SSL with Certbot
+
+```bash
+# Install Certbot
+apt install certbot python3-certbot-nginx -y
+
+# Get SSL certificate
+certbot --nginx -d yourdomain.com -d www.yourdomain.com
+
+# Auto-renewal is already configured, but verify:
+certbot renew --dry-run
+```
+
+---
+
+## Step 7: Verify Deployment
+
+1. **Health check:**
+
+   ```bash
+   curl https://yourdomain.com/api/health
    ```
-   https://your-app-url.ondigitalocean.app/api/health
-   ```
 
-   Should return: `{"status":"ok","timestamp":"..."}`
+2. **Test the app:**
+   - Visit https://yourdomain.com
+   - Create an account
+   - Create a board
+   - Test real-time features (open in 2 tabs)
 
-2. **Test Login Flow:**
-   - Visit your app URL
-   - Create a new account
-   - Verify redirect to dashboard
-   - Create a new board
+---
 
-3. **Test Real-time Features:**
-   - Open the same board in two browser tabs
-   - Draw in one, verify it appears in the other
-   - Test chat and shared notes
+## Useful Commands
+
+```bash
+# View logs
+docker compose logs -f
+
+# Restart containers
+docker compose restart
+
+# Stop containers
+docker compose down
+
+# Stop and remove volumes (⚠️ deletes data!)
+docker compose down -v
+
+# Rebuild after code changes
+git pull
+docker compose up -d --build
+
+# Enter database container
+docker compose exec db psql -U kyoboard
+
+# Enter app container
+docker compose exec app sh
+```
+
+---
+
+## Updating the App
+
+```bash
+cd /root/kyoboard
+git pull
+docker compose up -d --build
+```
+
+---
+
+## Nginx + WebSocket Explanation
+
+**Yes, you need Nginx** for:
+
+1. **SSL/HTTPS** - Certbot manages certificates
+2. **Port 80/443** - Standard web ports (Docker uses 3000)
+3. **WebSocket Upgrade** - The `/socket.io` location block handles this
+
+The key WebSocket configuration in `nginx.conf`:
+
+```nginx
+location /socket.io {
+    proxy_pass http://127.0.0.1:3000;
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection "upgrade";
+    proxy_read_timeout 7d;  # Keep connection alive
+}
+```
+
+Without these headers, WebSocket connections will fail!
+
+---
+
+## Firewall Setup
+
+```bash
+# Allow SSH, HTTP, HTTPS
+ufw allow OpenSSH
+ufw allow 'Nginx Full'
+ufw enable
+ufw status
+```
 
 ---
 
 ## Troubleshooting
 
-### CORS Errors
+### WebSocket not connecting
 
-Add your production URL to `CLIENT_URL` environment variable.
+- Check Nginx logs: `tail -f /var/log/nginx/kyoboard.error.log`
+- Verify `/socket.io` location block in nginx.conf
 
-### Database Connection Failed
+### Database connection failed
 
-- Verify DATABASE_URL is correct
-- Check if database is in same region as app
-- Ensure SSL is enabled in connection string
+- Check container status: `docker compose ps`
+- Check db logs: `docker compose logs db`
 
-### WebSocket Not Connecting
+### Container keeps restarting
 
-- App Platform handles WebSocket upgrades automatically
-- If using Droplet, configure nginx:
+- Check logs: `docker compose logs app`
+- Verify .env file has all required variables
 
-```nginx
-location / {
-    proxy_pass http://localhost:3000;
-    proxy_http_version 1.1;
-    proxy_set_header Upgrade $http_upgrade;
-    proxy_set_header Connection "upgrade";
-    proxy_set_header Host $host;
-    proxy_set_header X-Real-IP $remote_addr;
-}
-```
+### 502 Bad Gateway
 
-### Static Files Not Loading
-
-Check that `NODE_ENV=production` is set so the server serves static files.
-
----
-
-## SSL/HTTPS
-
-DigitalOcean App Platform provides **free SSL certificates** automatically. No configuration needed!
-
-For Droplets, use Certbot:
-
-```bash
-sudo apt install certbot python3-certbot-nginx
-sudo certbot --nginx -d yourdomain.com
-```
+- App container not running: `docker compose up -d`
+- Check app logs: `docker compose logs app`
 
 ---
 
 ## Estimated Costs
 
-| Component            | Cost/Month    |
-| -------------------- | ------------- |
-| App Platform (Basic) | $5            |
-| PostgreSQL (Basic)   | $15           |
-| **Total**            | **$20/month** |
+| Component     | Cost/Month     |
+| ------------- | -------------- |
+| Droplet (2GB) | $12            |
+| Domain        | ~$1            |
+| **Total**     | **~$13/month** |
 
-For higher traffic, upgrade to:
-
-- App Platform Pro: $12/month
-- PostgreSQL Professional: $50/month
+Much cheaper than App Platform + Managed DB! 🎉
 
 ---
 
-## Quick Deploy Checklist
+## File Checklist
 
-- [ ] Push code to GitHub
-- [ ] Create PostgreSQL database
-- [ ] Create App Platform app
-- [ ] Set environment variables
-- [ ] Run database migrations
-- [ ] Test health endpoint
-- [ ] Test login/signup
-- [ ] Test real-time collaboration
-- [ ] Set up custom domain (optional)
+Make sure these files are in your repo:
 
----
-
-Need help? Check the [DigitalOcean Documentation](https://docs.digitalocean.com/products/app-platform/).
+- [ ] `Dockerfile`
+- [ ] `docker-compose.yml`
+- [ ] `.env.example`
+- [ ] `nginx.conf`
+- [ ] `404.html`
+- [ ] `500.html`
