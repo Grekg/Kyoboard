@@ -1,0 +1,235 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pricing - Kyoboard</title>
+    <link rel="stylesheet" href="css/global.css" />
+    <link rel="stylesheet" href="css/pricing.css" />
+  </head>
+  <body>
+    <!-- Navbar (Reuse structure) -->
+    <nav class="navbar">
+      <div class="container nav-container">
+        <a href="index.html" class="nav-brand">
+          <img
+            src="logo2-removebg-preview.png"
+            alt="Kyoboard Logo"
+            style="height: 48px; margin-right: 0.25rem"
+          />
+          Kyoboard
+        </a>
+
+        <ul class="nav-links">
+          <li><a href="#">Product</a></li>
+          <!-- Solutions Removed -->
+          <li><a href="pricing.html" style="color: #fff">Pricing</a></li>
+          <li><a href="#">Resources</a></li>
+        </ul>
+
+        <div class="nav-actions">
+          <a
+            href="login.html"
+            class="btn btn-outline"
+            style="padding: 0.5rem 1rem; font-size: 0.9rem"
+            >Log In</a
+          >
+          <a
+            href="login.html"
+            class="btn btn-primary"
+            style="padding: 0.5rem 1rem; font-size: 0.9rem"
+            >Get Started</a
+          >
+        </div>
+      </div>
+    </nav>
+
+    <main class="pricing-main">
+      <div class="container text-center pt-xl">
+        <h1 class="pricing-title">
+          Choose the right plan for your <br />
+          team
+        </h1>
+        <p class="pricing-sub">
+          Flexible pricing that scales with your collaboration needs. Start for
+          free <br />
+          and upgrade as you grow.
+        </p>
+
+        <div class="toggle-container mb-lg">
+          <span class="toggle-label text-muted">Monthly</span>
+          <div class="toggle-switch active" id="billingToggle">
+            <div class="toggle-knob"></div>
+          </div>
+          <span class="toggle-label active text-white"
+            >Yearly <span class="save-badge">(Save 20%)</span></span
+          >
+        </div>
+      </div>
+
+      <div class="container pricing-grid mb-xl">
+        <!-- Professional -->
+        <div class="glass-panel pricing-card">
+          <div class="card-header">
+            <h3>Professional</h3>
+            <p class="text-sm">For small teams getting started.</p>
+          </div>
+          <div class="price-block">
+            <span class="currency">$</span><span class="amount">12</span
+            ><span class="period">/user/mo</span>
+          </div>
+          <button class="btn btn-outline full-width mb-md">
+            Start Free Trial
+          </button>
+          <ul class="feature-list">
+            <li><span class="check">✓</span> Unlimited Boards</li>
+            <li><span class="check">✓</span> Private Projects</li>
+            <li><span class="check">✓</span> Standard Export (PDF, PNG)</li>
+            <li><span class="check">✓</span> 30-day version history</li>
+          </ul>
+        </div>
+
+        <!-- Business (Highlighted) -->
+        <div class="glass-panel pricing-card highlight">
+          <div class="best-value-badge">Most Popular</div>
+          <div class="card-header">
+            <h3 class="text-blue">Business</h3>
+            <p class="text-sm">For growing teams needing security.</p>
+          </div>
+          <div class="price-block">
+            <span class="currency">$</span><span class="amount">25</span
+            ><span class="period">/user/mo</span>
+          </div>
+          <button class="btn btn-primary full-width mb-md">
+            Start Free Trial
+          </button>
+          <ul class="feature-list">
+            <li><span class="check-blue">✓</span> Everything in Pro</li>
+            <li><span class="check-blue">✓</span> Advanced Permissions</li>
+            <li><span class="check-blue">✓</span> SSO (SAML, Google, Okta)</li>
+            <li>
+              <span class="check-blue">✓</span> External Collaborator access
+            </li>
+            <li><span class="check-blue">✓</span> Unlimited version history</li>
+          </ul>
+        </div>
+
+        <!-- Enterprise -->
+        <div class="glass-panel pricing-card">
+          <div class="card-header">
+            <h3>Enterprise</h3>
+            <p class="text-sm">For large organizations requiring scale.</p>
+          </div>
+          <div class="price-block">
+            <span class="amount" style="font-size: 2.5rem">Custom</span>
+          </div>
+          <button class="btn btn-outline full-width mb-md">
+            Contact Sales
+          </button>
+          <ul class="feature-list">
+            <li><span class="check">✓</span> Everything in Business</li>
+            <li><span class="check">✓</span> Dedicated Support Manager</li>
+            <li>
+              <span class="check">✓</span> Enterprise Security & Audit Logs
+            </li>
+            <li><span class="check">✓</span> Data Governance Controls</li>
+            <li><span class="check">✓</span> 99.9% Uptime SLA</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Comparison Table -->
+      <div class="container mb-xl">
+        <h2 class="text-center mb-lg" style="font-size: 1.5rem">
+          Feature Comparison
+        </h2>
+
+        <div class="glass-panel table-container">
+          <table class="comparison-table">
+            <thead>
+              <tr>
+                <th>Feature</th>
+                <th>Professional</th>
+                <th class="text-blue">Business</th>
+                <th>Enterprise</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Unlimited Boards</td>
+                <td class="text-center"><span class="check">✓</span></td>
+                <td class="text-center"><span class="check-blue">✓</span></td>
+                <td class="text-center"><span class="check">✓</span></td>
+              </tr>
+              <tr>
+                <td>Team Members</td>
+                <td class="text-center">Up to 10</td>
+                <td class="text-center">Unlimited</td>
+                <td class="text-center">Unlimited</td>
+              </tr>
+              <tr>
+                <td>SSO Integration</td>
+                <td class="text-center">—</td>
+                <td class="text-center"><span class="check-blue">✓</span></td>
+                <td class="text-center"><span class="check">✓</span></td>
+              </tr>
+              <tr>
+                <td>Support</td>
+                <td class="text-center">Email</td>
+                <td class="text-center">Priority Email</td>
+                <td class="text-center">Dedicated CSM</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- FAQ Section -->
+      <div class="container mb-xl">
+        <h2 class="text-center mb-lg" style="font-size: 1.5rem">
+          Frequently Asked Questions
+        </h2>
+
+        <div class="faq-grid">
+          <div class="glass-panel faq-item">
+            <h4>Can I switch plans later?</h4>
+            <p class="text-sm text-muted">
+              Yes, you can upgrade or downgrade your plan at any time. Changes
+              to your billing will be prorated automatically.
+            </p>
+          </div>
+
+          <div class="glass-panel faq-item">
+            <h4>Do you offer discounts for non-profits?</h4>
+            <p class="text-sm text-muted">
+              Absolutely! We love supporting organizations that do good. Contact
+              our sales team for special non-profit pricing.
+            </p>
+          </div>
+
+          <div class="glass-panel faq-item">
+            <h4>What happens after my trial ends?</h4>
+            <p class="text-sm text-muted">
+              If you don't upgrade by the end of your 14-day trial, your account
+              will be downgraded to the free plan with limited features.
+            </p>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="container text-center">
+        <div class="copyright">© 2026 Kyoboard Platform Inc.</div>
+        <div class="footer-bottom-links">
+          <a href="#">Privacy</a>
+          <a href="#">Terms</a>
+          <a href="#">Twitter</a>
+          <a href="#">LinkedIn</a>
+        </div>
+      </div>
+    </footer>
+
+    <script src="js/pricing.js"></script>
+  </body>
+</html>

@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login - Kyoboard</title>
+    <link rel="stylesheet" href="css/global.css" />
+    <link rel="stylesheet" href="css/login.css" />
+  </head>
+  <body>
+    <nav
+      class="navbar"
+      style="background: transparent; border: none; backdrop-filter: none"
+    >
+      <div class="container nav-container">
+        <a href="index.html" class="nav-brand">
+          <img
+            src="logo2-removebg-preview.png"
+            alt="Kyoboard Logo"
+            style="height: 48px; margin-right: 0.25rem"
+          />
+          Kyoboard
+        </a>
+        <div class="nav-actions">
+          <a
+            href="#"
+            class="btn btn-text"
+            style="color: var(--text-muted); font-size: 0.9rem"
+            >Contact Support</a
+          >
+        </div>
+      </div>
+    </nav>
+
+    <main class="login-container">
+      <div class="glass-panel login-card">
+        <div class="text-center mb-lg">
+          <h1 style="font-size: 1.8rem; margin-bottom: 0.5rem">Welcome Back</h1>
+          <p>Log in to collaborate with your team.</p>
+        </div>
+
+        <div class="social-login">
+          <button class="btn btn-outline full-width social-btn">
+            <span class="g-icon">G</span> Continue with Google
+          </button>
+          <button class="btn btn-outline full-width social-btn">
+            <span class="o-icon">Ok</span> Continue with Okta
+          </button>
+        </div>
+
+        <div class="divider">
+          <span>OR LOGIN WITH EMAIL</span>
+        </div>
+
+        <form class="login-form" action="dashboard.html">
+          <!-- Auto-redirect for demo -->
+          <div class="form-group">
+            <label for="email" class="form-label">Work Email</label>
+            <input
+              type="email"
+              id="email"
+              class="form-input"
+              placeholder="name@company.com"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <div class="flex-between">
+              <label for="password" class="form-label">Password</label>
+              <a href="#" class="link-sm">Forgot password?</a>
+            </div>
+            <div class="input-icon-wrapper">
+              <span class="lock-icon">🔒</span>
+              <input
+                type="password"
+                id="password"
+                class="form-input with-icon"
+                placeholder="••••••••"
+                required
+              />
+            </div>
+          </div>
+
+          <button
+            type="submit"
+            class="btn btn-primary full-width mt-md"
+            style="padding: 1rem"
+          >
+            Log In
+          </button>
+        </form>
+
+        <div class="text-center mt-lg footer-text">
+          Don't have an account?
+          <a href="#" class="link-highlight">Request Access</a>
+        </div>
+      </div>
+
+      <div class="login-footer">
+        <a href="#">Privacy Policy</a>
+        <a href="#">Terms of Service</a>
+      </div>
+    </main>
+
+    <script src="js/login.js"></script>
+  </body>
+</html>

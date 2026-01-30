@@ -1,0 +1,70 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String   @id @default(uuid())
+  username     String   @unique
+  email        String   @unique
+  passwordHash String   @map("password_hash")
+  avatarUrl    String?  @map("avatar_url")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  boards        Board[]        @relation("BoardOwner")
+  chatMessages  ChatMessage[]
+  sharedNotes   SharedNote[]   @relation("LastUpdatedBy")
+
+  @@map("users")
+}
+
+model Board {
+  id          String   @id @default(uuid())
+  name        String   @default("Untitled Board")
+  canvasState Json?    @map("canvas_state")
+  thumbnail   String?
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  // Relations - owner_id links to creator, but access is open to any authenticated user with the URL
+  ownerId      String        @map("owner_id")
+  owner        User          @relation("BoardOwner", fields: [ownerId], references: [id], onDelete: Cascade)
+  chatMessages ChatMessage[]
+  sharedNote   SharedNote?
+
+  @@map("boards")
+}
+
+model ChatMessage {
+  id        String   @id @default(uuid())
+  content   String
+  createdAt DateTime @default(now()) @map("created_at")
+
+  // Relations
+  boardId String @map("board_id")
+  board   Board  @relation(fields: [boardId], references: [id], onDelete: Cascade)
+  userId  String @map("user_id")
+  user    User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("chat_messages")
+}
+
+model SharedNote {
+  id            String   @id @default(uuid())
+  content       String   @default("")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  boardId       String   @unique @map("board_id")
+  board         Board    @relation(fields: [boardId], references: [id], onDelete: Cascade)
+  lastUpdatedBy String?  @map("last_updated_by")
+  updater       User?    @relation("LastUpdatedBy", fields: [lastUpdatedBy], references: [id])
+
+  @@map("shared_notes")
+}

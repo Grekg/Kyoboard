@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Kyoboard - Collaborative Platform</title>
+    <link rel="stylesheet" href="css/global.css" />
+    <link rel="stylesheet" href="css/index.css" />
+  </head>
+  <body>
+    <!-- Navbar -->
+    <nav class="navbar">
+      <div class="container nav-container">
+        <a href="index.html" class="nav-brand">
+          <img
+            src="logo2-removebg-preview.png"
+            alt="Kyoboard Logo"
+            style="height: 48px; margin-right: 0.25rem"
+          />
+          Kyoboard
+        </a>
+
+        <ul class="nav-links">
+          <li><a href="#">Product</a></li>
+          <!-- Solutions Removed as requested -->
+          <li><a href="pricing.html">Pricing</a></li>
+          <li><a href="#">Resources</a></li>
+        </ul>
+
+        <div class="nav-actions">
+          <a
+            href="login.html"
+            class="btn btn-outline"
+            style="padding: 0.5rem 1rem; font-size: 0.9rem"
+            >Log In</a
+          >
+          <a
+            href="login.html"
+            class="btn btn-primary"
+            style="padding: 0.5rem 1rem; font-size: 0.9rem"
+            >Get Started</a
+          >
+        </div>
+      </div>
+    </nav>
+
+    <!-- Pricing Section (Preview on Landing Page??) 
+         Wait, looking at uploaded_image_4, it looks like a Landing/Pricing hybrid or maybe just the Pricing page?
+         
+         Uploaded Image 4 (Fourth Photo) check:
+         - "Choose the right plan for your team"
+         - Pricing cards below.
+         
+         Wait, user said "landing page like the fourth photo".
+         The fourth photo TEXT says "Choose the right plan for your team".
+         BUT usually the "Landing Page" is general info.
+         
+         Maybe the user considers the "Pricing Page" design as the Landing Page?
+         OR maybe they want that Header style?
+         
+         Let's look at uploaded_image_4 again.
+         It has "Whiteboard Platform" logo. Nav: Product, Solutions, Pricing, Resources.
+         Headline: "Choose the right plan for your team".
+         
+         If the USER calls this the "Landing Page", I should implement THIS as index.html.
+         
+         However, the user ALSO asked for "a page for the pricing like in the second photo".
+         Let's check second photo (uploaded_image_1).
+         Second photo looks... nearly identical to the fourth photo? 
+         
+         Let's re-examine images.
+         Image 0: Login
+         Image 1: Pricing?
+         Image 2: Dashboard?
+         Image 3: Logo?
+         Image 4: "Landing page like the fourth photo".
+         
+         If image 1 and 4 are similar, maybe one shows "Features" and one "Pricing"?
+         
+         Let's assume "Landing Page" = Image 4 style.
+         image_4 has "Choose the right plan for your team". This is definitely a pricing section header.
+         
+         Maybe the user messed up the image numbering or descriptions?
+         "landing page like the fourth photo... also a page for the pricing like in the second photo."
+         
+         If Image 4 is the landing page design, I will follow it.
+         Note: Image 4 seems to focus on "Pricing" in the text.
+         
+         I will make index.html behave like a Landing Page but with that visual style.
+         I'll add a generic "Hero" text instead of "Choose right plan" if it feels wrong, 
+         BUT user instruction "Landing page like the fourth photo" is specific.
+         
+         Actually, let's look at "Third Photo" (Image 2) -> Dashboard.
+         "Fourth Photo" (Image 3 or 4 depending on 0-indexing).
+         
+         Image listing:
+         0: Login
+         1: Pricing
+         2: Dashboard
+         3: Logo
+         4: Landing?
+         
+         Ah, if there are 5 images (0-4).
+         uploaded_image_4 is the "Last" one? No, 4 is the last index.
+         
+         Let's assume:
+         Image 4 is the one with "Build faster, together" headline?
+         That would make more sense for a Landing Page.
+         
+         Let's check the request text carefully: "like the fourth photo".
+         
+         I will implement a standard Landing Page layout structure for index.html using the aesthetic of the provided "Landing" image (likely the one with 'Build faster' or generic hero).
+         
+         I will assume Image 4 is the "Build faster, together" one.
+         If Image 4 is the "Pricing" one, then I will follow that.
+         
+         To be safe, I'll assume standard Hero section:
+         H1: Build faster, together.
+         Sub: Real-time collaboration...
+    -->
+
+    <main class="landing-main">
+      <section class="hero-section">
+        <div class="container text-center">
+          <div class="pill-badge">✨ New AI-Assisted Brainstorming</div>
+          <h1 class="display-title">
+            Build faster, together.<br />
+            <span class="text-blue"
+              >The whiteboard for <br />
+              enterprise.</span
+            >
+          </h1>
+          <p class="lead-text">
+            Real-time collaboration with enterprise-grade security. Scale your
+            team's creativity without compromising control.
+          </p>
+
+          <div class="hero-cta-group">
+            <input
+              type="email"
+              placeholder="Enter your work email"
+              class="hero-input"
+            />
+            <button class="btn btn-primary">Start Collaborating Free</button>
+          </div>
+
+          <div class="hero-visual">
+            <!-- Placeholder for the big UI screenshot -->
+            <div
+              class="glass-panel visual-mockup"
+              style="height: 400px; margin-top: 3rem; position: relative"
+            >
+              <!-- Abstract UI elements -->
+              <div
+                style="
+                  position: absolute;
+                  top: 20px;
+                  left: 20px;
+                  right: 20px;
+                  bottom: 20px;
+                  background: rgba(255, 255, 255, 0.05);
+                  border-radius: 8px;
+                "
+              ></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Trusted By -->
+      <section class="logos-section">
+        <div class="container text-center">
+          <p class="text-sm text-muted">TRUSTED BY FORWARD-THINKING TEAMS AT</p>
+          <div class="logo-grid">
+            <span>ACME Corp</span>
+            <span>GlobalBank</span>
+            <span>TechSpace</span>
+            <span>NextGen</span>
+            <span>FutureSoft</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Features Grid -->
+      <section class="features-section container">
+        <div class="section-header text-center">
+          <h2>Everything you need to scale</h2>
+          <p>Designed for speed, built for control.</p>
+        </div>
+
+        <div class="grid-3">
+          <div class="glass-panel feature-card">
+            <div class="icon-box">⚡</div>
+            <h3>Instant Sync</h3>
+            <p>Changes reflect in milliseconds across the globe.</p>
+          </div>
+          <div class="glass-panel feature-card">
+            <div class="icon-box">♾️</div>
+            <h3>Infinite Canvas</h3>
+            <p>Never run out of space for big ideas.</p>
+          </div>
+          <div class="glass-panel feature-card">
+            <div class="icon-box">🛡️</div>
+            <h3>Enterprise Security</h3>
+            <p>SSO, SOC2 Type II compliance, and end-to-end encryption.</p>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <div class="container">
+        <div class="footer-content">
+          <div class="footer-brand">
+            <span class="brand-icon-sm"></span> Kyoboard
+          </div>
+          <div class="footer-links">
+            <a href="#">Privacy</a>
+            <a href="#">Terms</a>
+            <a href="#">Twitter</a>
+            <a href="#">LinkedIn</a>
+          </div>
+        </div>
+        <div class="copyright">© 2026 Kyoboard Platform Inc.</div>
+      </div>
+    </footer>
+
+    <script src="js/index.js"></script>
+  </body>
+</html>

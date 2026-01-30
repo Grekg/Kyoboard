@@ -1,0 +1,46 @@
+version: "3.8"
+
+services:
+  app:
+    build: .
+    container_name: kyoboard-server
+    ports:
+      - "3000:3000"
+    environment:
+      - DATABASE_URL=postgresql://kyoboard:kyoboard_secret@db:5432/kyoboard
+      - JWT_SECRET=${JWT_SECRET:-your-super-secret-jwt-key-min-32-chars}
+      - NODE_ENV=production
+      - CLIENT_URL=${CLIENT_URL:-http://localhost}
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - kyoboard-network
+
+  db:
+    image: postgres:16-alpine
+    container_name: kyoboard-db
+    environment:
+      POSTGRES_USER: kyoboard
+      POSTGRES_PASSWORD: kyoboard_secret
+      POSTGRES_DB: kyoboard
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U kyoboard -d kyoboard"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+    networks:
+      - kyoboard-network
+
+volumes:
+  postgres_data:
+
+networks:
+  kyoboard-network:
+    driver: bridge
