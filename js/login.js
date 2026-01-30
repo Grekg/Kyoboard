@@ -1,5 +1,6 @@
 (() => {
-  const API_BASE = "http://localhost:3000/api";
+  const API_BASE =
+    window.KYOBOARD_CONFIG?.API_BASE || "http://localhost:3000/api";
 
   const form = document.querySelector(".login-form");
   const emailInput = document.getElementById("email");

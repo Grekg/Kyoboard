@@ -1,6 +1,8 @@
 (() => {
-  const API_BASE = "http://localhost:3000/api";
-  const SOCKET_URL = "http://localhost:3000";
+  const API_BASE =
+    window.KYOBOARD_CONFIG?.API_BASE || "http://localhost:3000/api";
+  const SOCKET_URL =
+    window.KYOBOARD_CONFIG?.SOCKET_URL || "http://localhost:3000";
 
   // Get board ID from URL
   const urlParams = new URLSearchParams(window.location.search);

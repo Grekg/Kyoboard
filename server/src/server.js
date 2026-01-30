@@ -71,9 +71,29 @@ app.get("/api/health", (req, res) => {
 // Initialize Socket.io
 initializeSocket(io);
 
+// Serve index.html for SPA routes in production
+if (process.env.NODE_ENV === "production") {
+  app.get("*", (req, res, next) => {
+    // Skip API routes
+    if (req.path.startsWith("/api")) {
+      return next();
+    }
+    // Check if file exists, otherwise serve 404.html
+    const filePath = path.join(__dirname, "../../", req.path);
+    res.sendFile(filePath, (err) => {
+      if (err) {
+        res.sendFile(path.join(__dirname, "../../404.html"));
+      }
+    });
+  });
+}
+
 // Error handling middleware
 app.use((err, req, res, next) => {
   console.error("Server error:", err);
+  if (process.env.NODE_ENV === "production") {
+    return res.status(500).sendFile(path.join(__dirname, "../../500.html"));
+  }
   res.status(500).json({ error: "Internal server error" });
 });
 
