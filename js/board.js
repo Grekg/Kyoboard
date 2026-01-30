@@ -85,13 +85,29 @@
   // Live cursors
   const cursors = {};
 
+  // Helper to get auth headers
+  function getAuthHeaders() {
+    const token = localStorage.getItem("kyoboard_token");
+    const headers = { "Content-Type": "application/json" };
+    if (token) {
+      headers["Authorization"] = `Bearer ${token}`;
+    }
+    return headers;
+  }
+
   // Initialize
   init();
 
   async function init() {
     // Check authentication
     try {
+      const token = localStorage.getItem("kyoboard_token");
+      if (!token) {
+        throw new Error("No token");
+      }
+
       const res = await fetch(`${API_BASE}/auth/me`, {
+        headers: getAuthHeaders(),
         credentials: "include",
       });
       if (!res.ok) throw new Error("Not authenticated");
@@ -99,11 +115,12 @@
       currentUser = data.user;
 
       // Update UI
-      usernameEl.value = currentUser.username;
+      if (usernameEl) usernameEl.value = currentUser.username;
       if (userProfileImg && currentUser.avatarUrl) {
         userProfileImg.src = currentUser.avatarUrl;
       }
     } catch (error) {
+      console.error("Auth error:", error);
       window.location.href = "login.html";
       return;
     }
@@ -130,8 +147,13 @@
   }
 
   function connectSocket() {
+    const token = localStorage.getItem("kyoboard_token");
+
     socket = io(SOCKET_URL, {
       withCredentials: true,
+      auth: {
+        token: token,
+      },
     });
 
     socket.on("connect", () => {

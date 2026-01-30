@@ -1,4 +1,5 @@
 const prisma = require("../config/db");
+const { hashPassword, comparePassword } = require("../utils/password");
 
 /**
  * GET /api/users/me
@@ -36,17 +37,46 @@ async function getProfile(req, res) {
 
 /**
  * PUT /api/users/me
- * Update current user profile
+ * Update current user profile (including password change)
  */
 async function updateProfile(req, res) {
   try {
-    const { username, email, avatarUrl } = req.body;
+    const { username, email, avatarUrl, currentPassword, newPassword } =
+      req.body;
 
     // Build update data
     const updateData = {};
     if (username !== undefined) updateData.username = username;
     if (email !== undefined) updateData.email = email;
     if (avatarUrl !== undefined) updateData.avatarUrl = avatarUrl;
+
+    // Handle password change
+    if (newPassword) {
+      if (!currentPassword) {
+        return res
+          .status(400)
+          .json({ error: "Current password is required to change password" });
+      }
+
+      // Verify current password
+      const user = await prisma.user.findUnique({
+        where: { id: req.user.id },
+        select: { passwordHash: true },
+      });
+
+      const isValid = await comparePassword(currentPassword, user.passwordHash);
+      if (!isValid) {
+        return res.status(400).json({ error: "Current password is incorrect" });
+      }
+
+      if (newPassword.length < 6) {
+        return res
+          .status(400)
+          .json({ error: "New password must be at least 6 characters" });
+      }
+
+      updateData.passwordHash = await hashPassword(newPassword);
+    }
 
     // Check for conflicts
     if (username || email) {
@@ -85,7 +115,10 @@ async function updateProfile(req, res) {
       },
     });
 
-    return res.json({ user });
+    return res.json({
+      user,
+      message: newPassword ? "Profile and password updated" : "Profile updated",
+    });
   } catch (error) {
     console.error("Update profile error:", error);
     return res.status(500).json({ error: "Failed to update profile" });

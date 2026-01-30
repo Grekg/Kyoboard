@@ -62,6 +62,7 @@ async function signup(req, res) {
 
     return res.status(201).json({
       message: "Account created successfully",
+      token,
       user,
     });
   } catch (error) {
@@ -104,6 +105,7 @@ async function login(req, res) {
 
     return res.json({
       message: "Login successful",
+      token,
       user: {
         id: user.id,
         username: user.username,

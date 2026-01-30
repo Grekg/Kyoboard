@@ -35,18 +35,14 @@
           <a href="#" class="nav-item active" title="My Boards">
             <span class="icon">▦</span> <span class="label">My Boards</span>
           </a>
-          <a href="#" class="nav-item" title="Shared with Me">
-            <span class="icon">👥</span>
-            <span class="label">Shared with Me</span>
-          </a>
-          <a href="#" class="nav-item" title="Archive">
-            <span class="icon">↺</span> <span class="label">Archive</span>
-          </a>
 
           <div class="spacer"></div>
 
-          <a href="#" class="nav-item" title="Settings">
+          <a href="#" class="nav-item" id="settings-btn" title="Settings">
             <span class="icon">⚙️</span> <span class="label">Settings</span>
+          </a>
+          <a href="#" class="nav-item" id="logout-btn" title="Logout">
+            <span class="icon">🚪</span> <span class="label">Logout</span>
           </a>
         </nav>
 
@@ -67,34 +63,23 @@
             <span class="search-icon">🔍</span>
             <input
               type="text"
-              placeholder="Search boards, rooms, or people..."
+              placeholder="Search boards..."
               class="search-input"
+              id="search-input"
             />
           </div>
 
           <div class="top-actions">
-            <button class="btn-icon">❓</button>
-            <button class="btn-icon">🔔</button>
             <button class="btn btn-primary new-board-btn">
               <span>+</span> New Board
             </button>
           </div>
         </header>
 
-        <!-- Dashboard Content (Simplified) -->
+        <!-- Dashboard Content -->
         <div class="content-area">
           <div class="welcome-header">
-            <h2>Active Rooms</h2>
-            <a href="#" class="link-sm">View all</a>
-          </div>
-
-          <!-- Simplified Empty State / Placeholder -->
-          <div class="empty-state-container">
-            <p class="text-muted">No active rooms at the moment.</p>
-          </div>
-
-          <div class="welcome-header mt-lg">
-            <h2>Recent Boards</h2>
+            <h2>My Boards</h2>
             <div class="view-toggles">
               <button class="icon-toggle active">▦</button>
               <button class="icon-toggle">☰</button>
@@ -103,11 +88,122 @@
 
           <div class="empty-state-container">
             <div class="dashed-box">
-              <button class="btn btn-primary">Create your first board</button>
+              <p style="color: var(--text-muted); margin-bottom: 1rem">
+                No boards yet
+              </p>
+              <button class="btn btn-primary create-first-btn">
+                Create your first board
+              </button>
             </div>
           </div>
         </div>
       </main>
+    </div>
+
+    <!-- Settings Modal -->
+    <div class="modal-overlay" id="settings-modal" style="display: none">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Settings</h2>
+          <button class="modal-close" id="settings-close">&times;</button>
+        </div>
+        <form id="settings-form">
+          <div class="form-group">
+            <label class="form-label">Username</label>
+            <input
+              type="text"
+              id="settings-username"
+              class="form-input"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Email</label>
+            <input
+              type="email"
+              id="settings-email"
+              class="form-input"
+              required
+            />
+          </div>
+          <hr style="border-color: var(--border-color); margin: 1.5rem 0" />
+          <h3 style="margin-bottom: 1rem; font-size: 1rem">Change Password</h3>
+          <div class="form-group">
+            <label class="form-label">Current Password</label>
+            <input
+              type="password"
+              id="settings-current-password"
+              class="form-input"
+            />
+          </div>
+          <div class="form-group">
+            <label class="form-label">New Password</label>
+            <input
+              type="password"
+              id="settings-new-password"
+              class="form-input"
+              minlength="6"
+            />
+          </div>
+          <div class="form-group">
+            <label class="form-label">Confirm New Password</label>
+            <input
+              type="password"
+              id="settings-confirm-password"
+              class="form-input"
+              minlength="6"
+            />
+          </div>
+          <div
+            class="form-error"
+            id="settings-error"
+            style="display: none"
+          ></div>
+          <div
+            class="form-actions"
+            style="display: flex; gap: 1rem; margin-top: 1.5rem"
+          >
+            <button
+              type="button"
+              class="btn btn-secondary"
+              id="settings-cancel"
+            >
+              Cancel
+            </button>
+            <button type="submit" class="btn btn-primary">Save Changes</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Delete Confirmation Modal -->
+    <div class="modal-overlay" id="delete-modal" style="display: none">
+      <div class="modal-content" style="max-width: 400px">
+        <div class="modal-header">
+          <h2>Delete Board?</h2>
+          <button class="modal-close" id="delete-close">&times;</button>
+        </div>
+        <p style="color: var(--text-secondary); margin-bottom: 1.5rem">
+          This action cannot be undone. The board and all its contents will be
+          permanently deleted.
+        </p>
+        <div
+          class="form-actions"
+          style="display: flex; gap: 1rem; justify-content: flex-end"
+        >
+          <button type="button" class="btn btn-secondary" id="delete-cancel">
+            Cancel
+          </button>
+          <button
+            type="button"
+            class="btn btn-danger"
+            id="delete-confirm"
+            style="background: #dc2626"
+          >
+            Delete
+          </button>
+        </div>
+      </div>
     </div>
 
     <script src="js/dashboard.js"></script>

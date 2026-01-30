@@ -15,9 +15,26 @@ const { initializeSocket } = require("./socket/socketManager");
 const app = express();
 const server = http.createServer(app);
 
-// CORS configuration
+// CORS configuration - allow both localhost and 127.0.0.1
+const allowedOrigins = [
+  "http://127.0.0.1:5500",
+  "http://localhost:5500",
+  "http://127.0.0.1:5501",
+  "http://localhost:5501",
+  process.env.CLIENT_URL,
+].filter(Boolean);
+
 const corsOptions = {
-  origin: process.env.CLIENT_URL || "http://127.0.0.1:5500",
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      console.log("Blocked by CORS:", origin);
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
   credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
@@ -25,7 +42,10 @@ const corsOptions = {
 
 // Socket.io with CORS
 const io = new Server(server, {
-  cors: corsOptions,
+  cors: {
+    origin: allowedOrigins,
+    credentials: true,
+  },
 });
 
 // Middleware

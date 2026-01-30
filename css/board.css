@@ -538,12 +538,17 @@ body {
 
 /* Element Styles for Board */
 .note-item {
+  background: #fef08a;
   box-shadow: var(--shadow-md);
   padding: 1rem;
+  padding-top: 1.5rem;
   font-family: "Kalam", cursive;
   font-size: 1.1rem;
   line-height: 1.4;
   color: #1f2937;
+  min-width: 150px;
+  min-height: 100px;
+  border-radius: 4px;
 }
 .card-item {
   box-shadow: var(--shadow-sm);
@@ -575,4 +580,66 @@ body {
   height: 6px;
   border-right: 2px solid var(--text-muted);
   border-bottom: 2px solid var(--text-muted);
+}
+
+/* Live Cursors - must not block interactions */
+.cursor {
+  pointer-events: none !important;
+  z-index: 100;
+}
+
+/* Element items must be interactive */
+.element-item {
+  pointer-events: auto;
+  position: absolute;
+  z-index: 10;
+  user-select: none;
+  touch-action: none;
+}
+
+.element-item:hover {
+  box-shadow:
+    0 0 0 2px var(--primary),
+    var(--shadow-md);
+}
+
+.element-item .note-content,
+.element-item .card-body {
+  pointer-events: auto;
+  cursor: text;
+}
+
+.element-item .drag-handle,
+.element-item .card-header {
+  pointer-events: auto;
+  cursor: grab;
+}
+
+.element-item .drag-handle:active,
+.element-item .card-header:active {
+  cursor: grabbing;
+}
+
+.element-item .resize-handle {
+  pointer-events: auto;
+  cursor: nwse-resize;
+  z-index: 25;
+}
+
+/* Shared notes textarea */
+#shared-notes-area {
+  width: 100%;
+  flex: 1;
+  background: var(--hover-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 0.75rem;
+  font-size: 0.9rem;
+  color: var(--text-main);
+  resize: none;
+  outline: none;
+}
+
+#shared-notes-area:focus {
+  border-color: var(--primary);
 }

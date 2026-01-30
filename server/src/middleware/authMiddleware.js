@@ -6,8 +6,16 @@ const prisma = require("../config/db");
  */
 async function authMiddleware(req, res, next) {
   try {
-    // Get token from cookie
-    const token = req.cookies?.token;
+    // Get token from cookie OR Authorization header
+    let token = req.cookies?.token;
+
+    // Check Authorization header if no cookie
+    if (!token) {
+      const authHeader = req.headers.authorization;
+      if (authHeader && authHeader.startsWith("Bearer ")) {
+        token = authHeader.substring(7);
+      }
+    }
 
     if (!token) {
       return res.status(401).json({ error: "Authentication required" });

@@ -15,7 +15,11 @@
 
   async function checkAuth() {
     try {
+      const token = localStorage.getItem("kyoboard_token");
+      if (!token) return; // No token, stay on login page
+
       const res = await fetch(`${API_BASE}/auth/me`, {
+        headers: { Authorization: `Bearer ${token}` },
         credentials: "include",
       });
       if (res.ok) {
@@ -116,6 +120,8 @@
         ? { username, email, password }
         : { email, password };
 
+      console.log("Attempting auth:", endpoint, body);
+
       const res = await fetch(`${API_BASE}${endpoint}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -123,19 +129,27 @@
         body: JSON.stringify(body),
       });
 
+      console.log("Response status:", res.status);
+
       const data = await res.json();
+      console.log("Response data:", data);
 
       if (!res.ok) {
         throw new Error(data.error || "Authentication failed");
       }
 
-      // Store user info for UI (cookie has the auth token)
+      // Store token and user info in localStorage
+      if (data.token) {
+        localStorage.setItem("kyoboard_token", data.token);
+      }
       localStorage.setItem("kyoboard_user", JSON.stringify(data.user));
 
+      console.log("Login successful, redirecting to dashboard...");
       // Redirect to dashboard
       window.location.href = "dashboard.html";
     } catch (error) {
-      showError(error.message);
+      console.error("Auth error:", error);
+      showError(error.message || "Network error - is the server running?");
       submitBtn.disabled = false;
       submitBtn.textContent = isSignupMode ? "Sign Up" : "Log In";
     }
