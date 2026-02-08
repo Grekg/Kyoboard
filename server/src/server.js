@@ -85,7 +85,7 @@ if (process.env.NODE_ENV === "production") {
     ? path.join(__dirname, "../public")
     : path.join(__dirname, "../../");
 
-  app.get("*", (req, res, next) => {
+  app.get(/.*/, (req, res, next) => {
     // Skip API routes
     if (req.path.startsWith("/api")) {
       return next();
