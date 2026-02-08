@@ -7,7 +7,7 @@ WORKDIR /app
 COPY server/package*.json ./
 
 # Install dependencies
-RUN npm ci --only=production
+RUN npm install --only=production
 
 # Copy Prisma schema and generate client
 COPY server/prisma ./prisma

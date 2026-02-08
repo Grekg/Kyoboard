@@ -36,24 +36,13 @@ services:
       DATABASE_URL: postgresql://${POSTGRES_USER:-kyoboard}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-kyoboard}
       JWT_SECRET: ${JWT_SECRET}
       CLIENT_URL: ${CLIENT_URL:-http://localhost}
-    # Ports removed, internal network only
-    command: >
-      sh -c "npx prisma db push --skip-generate && node src/server.js"
-
-  # Nginx Reverse Proxy
-  nginx:
-    image: nginx:alpine
-    container_name: kyoboard-nginx
-    restart: unless-stopped
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET}
+    # ONLY listen on local 3000 so Nginx can find it
     ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
-      - ./certbot/conf:/etc/letsencrypt:ro
-      - ./certbot/www:/var/www/certbot:ro
-    depends_on:
-      - app
+      - "127.0.0.1:3000:3000"
+    command: >
+      sh -c "npx prisma db push --skip-generate --accept-data-loss && node src/server.js"
 
 volumes:
   postgres_data:
