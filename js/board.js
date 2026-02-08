@@ -123,6 +123,8 @@
       }
     } catch (error) {
       console.error("Auth error:", error);
+      // Save current URL to redirect back after login
+      localStorage.setItem("redirect_after_login", window.location.href);
       window.location.href = "login.html";
       return;
     }
@@ -146,6 +148,59 @@
     setupChat();
     setupNotes();
     setupBoardName();
+    setupShare();
+  }
+
+  function setupShare() {
+    const btnShare = document.getElementById("btn-share");
+    if (!btnShare) return;
+
+    btnShare.addEventListener("click", () => {
+      const url = window.location.href;
+      navigator.clipboard
+        .writeText(url)
+        .then(() => {
+          showToast("Link copied to clipboard!");
+        })
+        .catch((err) => {
+          console.error("Failed to copy: ", err);
+          showToast("Failed to copy link.", true);
+        });
+    });
+  }
+
+  function showToast(message, isError = false) {
+    const toast = document.createElement("div");
+    toast.className = "toast-notification";
+    toast.innerText = message;
+    toast.style.cssText = `
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background: ${isError ? "#ef4444" : "#10b981"};
+        color: white;
+        padding: 12px 24px;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        z-index: 1000;
+        font-family: 'Inter', sans-serif;
+        opacity: 0;
+        transform: translateY(20px);
+        transition: all 0.3s ease;
+      `;
+    document.body.appendChild(toast);
+
+    // Trigger animation
+    requestAnimationFrame(() => {
+      toast.style.opacity = "1";
+      toast.style.transform = "translateY(0)";
+    });
+
+    setTimeout(() => {
+      toast.style.opacity = "0";
+      toast.style.transform = "translateY(20px)";
+      setTimeout(() => toast.remove(), 300);
+    }, 3000);
   }
 
   function connectSocket() {

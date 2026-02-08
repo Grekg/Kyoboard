@@ -145,9 +145,15 @@
       }
       localStorage.setItem("kyoboard_user", JSON.stringify(data.user));
 
-      console.log("Login successful, redirecting to dashboard...");
-      // Redirect to dashboard
-      window.location.href = "dashboard.html";
+      console.log("Login successful, redirecting...");
+
+      const redirectUrl = localStorage.getItem("redirect_after_login");
+      if (redirectUrl) {
+        localStorage.removeItem("redirect_after_login");
+        window.location.href = redirectUrl;
+      } else {
+        window.location.href = "dashboard.html";
+      }
     } catch (error) {
       console.error("Auth error:", error);
       showError(error.message || "Network error - is the server running?");

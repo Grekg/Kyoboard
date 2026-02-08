@@ -1,290 +1,169 @@
-# Kyoboard Deployment Guide - Docker on DigitalOcean Droplet
+# Kyoboard DigitalOcean Deployment Guide
 
-This guide covers deploying Kyoboard to a DigitalOcean Droplet using Docker Compose.
+This guide walks you through deploying Kyoboard to a DigitalOcean Droplet using Docker.
 
-## Architecture Overview
+## 1. Concepts
 
-```
-                         ┌─────────────────┐
-     Internet ──────────▶│     Nginx       │
-        (443)            │  (SSL + Proxy)  │
-                         └────────┬────────┘
-                                  │
-                                  ▼ (port 3000)
-                         ┌─────────────────┐
-                         │   Docker App    │──────▶ PostgreSQL
-                         │   (Node.js)     │       (Docker Volume)
-                         └─────────────────┘
-```
+- **Droplet:** A virtual private server (VPS). Think of it as a remote computer running Linux that is always on.
+- **Docker:** A tool to package the app and its dependencies (Node.js, Postgres, Nginx) into "containers".
+- **Docker Compose:** A tool to run multiple containers together (App + Database + Nginx) with one command.
+
+## 2. Prerequisites
+
+- **DigitalOcean Account.**
+- **Domain Name (Recommended):** While you can access the app via an IP address (e.g., `http://192.168.1.1`), features like "Copy Link" and SSL (HTTPS) require a proper domain (e.g., `kyoboard.com`).
+  - _Trade-off:_ Without a domain, you cannot have HTTPS (secure connection), and copy-paste links will look like IP addresses.
 
 ---
 
-## Prerequisites
+## 3. Step-by-Step Deployment
 
-- DigitalOcean account
-- Domain name pointed to your Droplet IP
-- Basic SSH knowledge
+### Step A: Create a Droplet
 
----
+1. Log in to DigitalOcean and click **Create -> Droplets**.
+2. **Region:** Choose one closest to you/your users.
+3. **OS:** Select **Ubuntu 22.04 (LTS)** or **24.04 (LTS)**.
+4. **Size:**
+   - **Recommended:** **Basic -> Regular -> 2GB / 1 CPU ($12/mo)** or **4GB / 2 CPU ($24/mo)**.
+   - _Note:_ Node.js and Postgres can be memory-heavy. 1GB might struggle during build.
+5. **Authentication:** Select **SSH Key** (upload your public key) or **Password** (easier for beginners, but less secure).
+6. **Hostname:** Give it a name (e.g., `kyoboard-server`).
+7. Click **Create Droplet**.
 
-## Step 1: Create a Droplet
+### Step B: Connect to Server
 
-1. Go to **DigitalOcean → Create → Droplet**
-2. Choose **Ubuntu 24.04 LTS**
-3. Select plan:
-   - **Basic** $6/month (1GB RAM) - OK for testing
-   - **Basic** $12/month (2GB RAM) - Recommended for production
-4. Choose datacenter region
-5. Add SSH key
-6. Create Droplet
-
----
-
-## Step 2: Initial Server Setup
+Open your terminal (or Command Prompt/PowerShell) and SSH into your new server IP:
 
 ```bash
-# SSH into your droplet
-ssh root@your-droplet-ip
+ssh root@YOUR_DROPLET_IP
+# If prompted, type 'yes' and enter your password.
+```
 
+### Step C: Install Docker & Git
+
+Run these commands one by one to install the necessary tools:
+
+```bash
 # Update system
 apt update && apt upgrade -y
+
+# Install Git and Curl
+apt install git curl -y
 
 # Install Docker
 curl -fsSL https://get.docker.com -o get-docker.sh
 sh get-docker.sh
 
-# Install Docker Compose
+# Install Docker Compose (Modern versions have it built-in, but just in case)
 apt install docker-compose-plugin -y
-
-# Verify installation
-docker --version
-docker compose version
 ```
 
----
+### Step D: Clone Project & Configure
 
-## Step 3: Clone and Configure
-
-```bash
-# Clone your repository
-git clone https://github.com/yourusername/kyoboard.git
-cd kyoboard
-
-# Create environment file
-cp .env.example .env
-nano .env
-```
-
-### Edit .env with these values:
-
-```bash
-# Database
-POSTGRES_USER=kyoboard
-POSTGRES_PASSWORD=YOUR_STRONG_PASSWORD_HERE
-POSTGRES_DB=kyoboard
-
-# App
-JWT_SECRET=YOUR_64_CHAR_SECRET_HERE
-CLIENT_URL=https://yourdomain.com
-PORT=3000
-```
-
-**Generate JWT_SECRET:**
-
-```bash
-openssl rand -hex 64
-```
-
----
-
-## Step 4: Start Docker Containers
-
-```bash
-# Build and start containers
-docker compose up -d --build
-
-# Check status
-docker compose ps
-
-# View logs
-docker compose logs -f app
-```
-
----
-
-## Step 5: Install & Configure Nginx
-
-```bash
-# Install Nginx
-apt install nginx -y
-
-# Copy config (use the nginx.conf from your repo)
-cp nginx.conf /etc/nginx/sites-available/kyoboard
-
-# Edit with your domain
-nano /etc/nginx/sites-available/kyoboard
-# Replace "yourdomain.com" with your actual domain
-
-# Enable site
-ln -s /etc/nginx/sites-available/kyoboard /etc/nginx/sites-enabled/
-rm /etc/nginx/sites-enabled/default
-
-# Test config
-nginx -t
-
-# Restart Nginx
-systemctl restart nginx
-```
-
----
-
-## Step 6: Setup SSL with Certbot
-
-```bash
-# Install Certbot
-apt install certbot python3-certbot-nginx -y
-
-# Get SSL certificate
-certbot --nginx -d yourdomain.com -d www.yourdomain.com
-
-# Auto-renewal is already configured, but verify:
-certbot renew --dry-run
-```
-
----
-
-## Step 7: Verify Deployment
-
-1. **Health check:**
+1. Clone your repository (Replace with your actual GitHub URL):
 
    ```bash
-   curl https://yourdomain.com/api/health
+   git clone https://github.com/YOUR_USERNAME/Kyoboard.git
+   cd Kyoboard
    ```
 
-2. **Test the app:**
-   - Visit https://yourdomain.com
-   - Create an account
-   - Create a board
-   - Test real-time features (open in 2 tabs)
+2. **Create Environment File:**
+   Copy the example env file (assuming your repo structure has `server/.env.example` or similar due to your local setup, but for Docker we usually place `.env` at root next to `docker-compose.yml`):
 
----
+   ```bash
+   # We need a .env file at the project root for docker-compose
+   nano .env
+   ```
 
-## Useful Commands
+   Paste the following configuration (Adjust values!):
+
+   ```ini
+   # Database (Internal Docker URL)
+   POSTGRES_USER=kyoboard
+   POSTGRES_PASSWORD=secure_password_here
+   POSTGRES_DB=kyoboard
+
+   # App
+   NODE_ENV=production
+   JWT_SECRET=super_long_random_secret_string_here
+
+   # IMPORTANT: Set this to your generic domain or IP for now
+   CLIENT_URL=http://yourdomain.com
+   ```
+
+   _Press `Ctrl+X`, then `Y`, then `Enter` to save._
+
+3. **Update Nginx Config:**
+   Open `nginx.conf` and replace `yourdomain.com` with your actual domain or IP address.
+   ```bash
+   nano nginx.conf
+   ```
+
+   - Find `server_name yourdomain.com ...`
+   - Change `yourdomain.com` to your actual domain.
+   - _If using only IP:_ set `server_name _;` (underscore).
+
+### Step E: Run the Application
+
+Start the containers in the background:
 
 ```bash
-# View logs
-docker compose logs -f
-
-# Restart containers
-docker compose restart
-
-# Stop containers
-docker compose down
-
-# Stop and remove volumes (⚠️ deletes data!)
-docker compose down -v
-
-# Rebuild after code changes
-git pull
 docker compose up -d --build
-
-# Enter database container
-docker compose exec db psql -U kyoboard
-
-# Enter app container
-docker compose exec app sh
 ```
 
----
-
-## Updating the App
-
-```bash
-cd /root/kyoboard
-git pull
-docker compose up -d --build
-```
+- Wait a few minutes. You can check logs with `docker compose logs -f app`.
+- Visit `http://YOUR_DROPLET_IP` (or your domain).
+- **Success!** Your app should be running.
 
 ---
 
-## Nginx + WebSocket Explanation
+## 4. Enabling HTTPS (SSL)
 
-**Yes, you need Nginx** for:
+_Skip this if you are only using an IP address._
 
-1. **SSL/HTTPS** - Certbot manages certificates
-2. **Port 80/443** - Standard web ports (Docker uses 3000)
-3. **WebSocket Upgrade** - The `/socket.io` location block handles this
+1. **Ensure Domain DNS Points to Droplet:**
+   - In your Domain Registrar (User/GoDaddy/Namecheap), add an **A Record**.
+   - Host: `@` -> Value: `YOUR_DROPLET_IP`.
 
-The key WebSocket configuration in `nginx.conf`:
+2. **Get Certificates (Certbot):**
+   Run this temporary container to generate certs:
 
-```nginx
-location /socket.io {
-    proxy_pass http://127.0.0.1:3000;
-    proxy_set_header Upgrade $http_upgrade;
-    proxy_set_header Connection "upgrade";
-    proxy_read_timeout 7d;  # Keep connection alive
-}
-```
+   ```bash
+   # Replace email and domain with yours
+   docker run -it --rm --name certbot \
+     -v "$PWD/certbot/conf:/etc/letsencrypt" \
+     -v "$PWD/certbot/www:/var/www/certbot" \
+     certbot/certbot certonly --webroot -w /var/www/certbot \
+     --email you@example.com \
+     --agree-tos \
+     --no-eff-email \
+     -d yourdomain.com -d www.yourdomain.com
+   ```
 
-Without these headers, WebSocket connections will fail!
+3. **Enable HTTPS in Nginx:**
+   Edit `nginx.conf` again:
 
----
+   ```bash
+   nano nginx.conf
+   ```
 
-## Firewall Setup
+   - Uncomment the `redirect HTTP to HTTPS` line in the first block.
+   - Uncomment the entire second `server { ... }` block (SSL).
+   - Ensure paths match `/etc/letsencrypt/live/yourdomain.com/...`.
 
-```bash
-# Allow SSH, HTTP, HTTPS
-ufw allow OpenSSH
-ufw allow 'Nginx Full'
-ufw enable
-ufw status
-```
+4. **Reload Nginx:**
+   ```bash
+   docker compose restart nginx
+   ```
 
----
+## 5. Maintenance
 
-## Troubleshooting
-
-### WebSocket not connecting
-
-- Check Nginx logs: `tail -f /var/log/nginx/kyoboard.error.log`
-- Verify `/socket.io` location block in nginx.conf
-
-### Database connection failed
-
-- Check container status: `docker compose ps`
-- Check db logs: `docker compose logs db`
-
-### Container keeps restarting
-
-- Check logs: `docker compose logs app`
-- Verify .env file has all required variables
-
-### 502 Bad Gateway
-
-- App container not running: `docker compose up -d`
-- Check app logs: `docker compose logs app`
-
----
-
-## Estimated Costs
-
-| Component     | Cost/Month     |
-| ------------- | -------------- |
-| Droplet (2GB) | $12            |
-| Domain        | ~$1            |
-| **Total**     | **~$13/month** |
-
-Much cheaper than App Platform + Managed DB! 🎉
-
----
-
-## File Checklist
-
-Make sure these files are in your repo:
-
-- [ ] `Dockerfile`
-- [ ] `docker-compose.yml`
-- [ ] `.env.example`
-- [ ] `nginx.conf`
-- [ ] `404.html`
-- [ ] `500.html`
+- **Update App:**
+  ```bash
+  git pull
+  docker compose up -d --build
+  ```
+- **View Logs:**
+  ```bash
+  docker compose logs -f
+  ```
