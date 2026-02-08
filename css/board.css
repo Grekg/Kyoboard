@@ -643,3 +643,44 @@ body {
 #shared-notes-area:focus {
   border-color: var(--primary);
 }
+
+/* === Mobile Responsive === */
+@media (max-width: 768px) {
+  #top-bar {
+    padding: 0 0.5rem;
+  }
+
+  .brand-name,
+  .divider-v,
+  .meta-label {
+    display: none;
+  }
+
+  .board-meta {
+    max-width: 120px;
+  }
+
+  /* Make left toolbar horizontal at bottom */
+  #toolbar-left {
+    top: auto;
+    bottom: 80px;
+    left: 50%;
+    transform: translateX(-50%);
+    flex-direction: row;
+    width: auto;
+    padding: 0.25rem 0.5rem;
+    border-radius: 99px;
+  }
+
+  .tool-flyout {
+    left: 50%;
+    top: auto;
+    bottom: 120%; /* Show above toolbar */
+    transform: translateX(-50%);
+  }
+
+  /* Hide sidebar by default on mobile */
+  #sidebar-right {
+    display: none; /* Logic to toggle would be needed for full chat support on mobile */
+  }
+}

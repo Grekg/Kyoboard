@@ -11,6 +11,31 @@
   // Check if we need to add signup fields
   let isSignupMode = false;
 
+  // URL Params Handling
+  const urlParams = new URLSearchParams(window.location.search);
+  const tokenParam = urlParams.get("token");
+  const errorParam = urlParams.get("error");
+  const modeParam = urlParams.get("mode");
+
+  if (errorParam) {
+    showError(decodeURIComponent(errorParam));
+  }
+
+  if (tokenParam) {
+    localStorage.setItem("kyoboard_token", tokenParam);
+    // Cleanup URL
+    window.history.replaceState({}, document.title, window.location.pathname);
+  }
+
+  if (modeParam === "signup") {
+    // We'll call toggleSignupMode but we need to wait for DOM or call it carefully
+    // Since script is likely at bottom of body, DOM is ready.
+    // However, toggleSignupMode relies on `isSignupMode` variable.
+    // Let's call it after definition or just set variable?
+    // toggleSignupMode() toggles the state. So if isSignupMode is false, it makes it true.
+    // We'll call it below.
+  }
+
   // Check if already logged in
   checkAuth();
 
@@ -37,6 +62,19 @@
     signupLink.addEventListener("click", (e) => {
       e.preventDefault();
       toggleSignupMode();
+    });
+  }
+
+  // Auto-toggle if requested
+  if (modeParam === "signup") {
+    toggleSignupMode();
+  }
+
+  // Google Login
+  const googleBtn = document.getElementById("google-login-btn");
+  if (googleBtn) {
+    googleBtn.addEventListener("click", () => {
+      window.location.href = `${API_BASE}/auth/google`;
     });
   }
 

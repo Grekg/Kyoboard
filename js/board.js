@@ -157,16 +157,41 @@
 
     btnShare.addEventListener("click", () => {
       const url = window.location.href;
-      navigator.clipboard
-        .writeText(url)
-        .then(() => {
-          showToast("Link copied to clipboard!");
-        })
-        .catch((err) => {
-          console.error("Failed to copy: ", err);
-          showToast("Failed to copy link.", true);
-        });
+
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard
+          .writeText(url)
+          .then(() => {
+            showToast("Link copied!");
+          })
+          .catch((err) => {
+            console.error("Clipboard API failed: ", err);
+            fallbackCopy(url);
+          });
+      } else {
+        fallbackCopy(url);
+      }
     });
+  }
+
+  function fallbackCopy(text) {
+    const textArea = document.createElement("textarea");
+    textArea.value = text;
+    textArea.style.position = "fixed";
+    textArea.style.left = "-9999px";
+    document.body.appendChild(textArea);
+    textArea.focus();
+    textArea.select();
+
+    try {
+      const successful = document.execCommand("copy");
+      if (successful) showToast("Link copied!");
+      else showToast("Failed to copy link.", true);
+    } catch (err) {
+      console.error("Fallback copy failed", err);
+      showToast("Failed to copy link.", true);
+    }
+    document.body.removeChild(textArea);
   }
 
   function showToast(message, isError = false) {

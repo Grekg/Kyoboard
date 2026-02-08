@@ -11,6 +11,7 @@ const authRoutes = require("./routes/authRoutes");
 const boardRoutes = require("./routes/boardRoutes");
 const userRoutes = require("./routes/userRoutes");
 const { initializeSocket } = require("./socket/socketManager");
+const passport = require("./config/passport");
 
 const app = express();
 const server = http.createServer(app);
@@ -52,6 +53,7 @@ const io = new Server(server, {
 app.use(cors(corsOptions));
 app.use(express.json({ limit: "10mb" })); // Large limit for canvas state
 app.use(cookieParser());
+app.use(passport.initialize());
 
 // Serve static frontend files in production
 if (process.env.NODE_ENV === "production") {
