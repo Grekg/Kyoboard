@@ -149,6 +149,7 @@
     setupNotes();
     setupBoardName();
     setupShare();
+    setupExport();
   }
 
   function setupShare() {
@@ -226,6 +227,42 @@
       toast.style.transform = "translateY(20px)";
       setTimeout(() => toast.remove(), 300);
     }, 3000);
+  }
+
+  function setupExport() {
+    const exportBtn = document.getElementById("export-btn");
+    if (!exportBtn) return;
+
+    exportBtn.addEventListener("click", () => {
+      try {
+        // Create a temporary canvas to composite everything
+        const exportCanvas = document.createElement("canvas");
+        exportCanvas.width = VIRTUAL_W;
+        exportCanvas.height = VIRTUAL_H;
+        const exportCtx = exportCanvas.getContext("2d");
+
+        // Fill with a background color (white for visibility)
+        exportCtx.fillStyle = "#1a1a2e";
+        exportCtx.fillRect(0, 0, VIRTUAL_W, VIRTUAL_H);
+
+        // Draw the main canvas content
+        exportCtx.drawImage(canvas, 0, 0);
+
+        // Export the canvas as PNG
+        const dataURL = exportCanvas.toDataURL("image/png");
+
+        // Create a temporary link to trigger download
+        const link = document.createElement("a");
+        link.download = `kyoboard-export-${Date.now()}.png`;
+        link.href = dataURL;
+        link.click();
+
+        showToast("Board exported successfully!");
+      } catch (err) {
+        console.error("Export failed:", err);
+        showToast("Export failed. Please try again.", true);
+      }
+    });
   }
 
   function connectSocket() {

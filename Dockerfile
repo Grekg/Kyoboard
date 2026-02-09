@@ -26,7 +26,7 @@ COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
 COPY server/ ./
 
 # Copy frontend files (static serving)
-COPY index.html login.html dashboard.html board.html 404.html 500.html ./public/
+COPY index.html login.html dashboard.html board.html pricing.html 404.html 500.html ./public/
 COPY css/ ./public/css/
 COPY js/ ./public/js/
 COPY logo2-removebg-preview.png ./public/
