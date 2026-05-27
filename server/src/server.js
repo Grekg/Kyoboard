@@ -78,6 +78,24 @@ app.get("/api/health", (req, res) => {
 // Initialize Socket.io
 initializeSocket(io);
 
+// Serve Product Page
+app.get("/product", (req, res) => {
+  const fs = require("fs");
+  const publicPath = fs.existsSync(path.join(__dirname, "../public"))
+    ? path.join(__dirname, "../public")
+    : path.join(__dirname, "../../");
+  res.sendFile(path.join(publicPath, "product.html"));
+});
+
+// Serve Pricing Page
+app.get("/pricing", (req, res) => {
+  const fs = require("fs");
+  const publicPath = fs.existsSync(path.join(__dirname, "../public"))
+    ? path.join(__dirname, "../public")
+    : path.join(__dirname, "../../");
+  res.sendFile(path.join(publicPath, "pricing.html"));
+});
+
 // Serve index.html for SPA routes in production
 if (process.env.NODE_ENV === "production") {
   const fs = require("fs");
