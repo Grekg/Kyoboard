@@ -7,69 +7,8 @@
     <link rel="stylesheet" href="css/global.css" />
     <link rel="stylesheet" href="css/product.css" />
     <link rel="stylesheet" href="css/index.css" />
-    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;700;900&amp;display=swap" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-    <script id="tailwind-config">tailwind.config = {darkMode: "class", theme: {extend: {colors: {"on-primary-fixed-variant": "#003daa", "inverse-surface": "#2e3039", "surface-black": "#000000", "outline-variant": "#c3c5d8", "on-secondary-fixed-variant": "#25428e", "primary-fixed": "#dbe1ff", error: "#ba1a1a", "surface-container-highest": "#e1e1ee", "surface-variant": "#e1e1ee", "secondary-fixed-dim": "#b4c5ff", "on-tertiary": "#ffffff", "surface-container-high": "#e7e7f3", "primary-fixed-dim": "#b4c5ff", tertiary: "#902e00", secondary: "#405aa7", "primary-container": "#135bec", primary: "#0045bd", "on-secondary-container": "#1e3c88", "inverse-on-surface": "#f0f0fc", background: "#faf8ff", "on-error-container": "#93000a", "on-tertiary-fixed": "#380d00", "on-primary": "#ffffff", "tertiary-fixed-dim": "#ffb59b", "on-surface": "#191b24", "surface-container": "#ededf9", "inverse-primary": "#b4c5ff", "text-dim": "rgba(255, 255, 255, 0.2)", "on-error": "#ffffff", "on-background": "#191b24", "stroke-white": "rgba(255, 255, 255, 0.05)", "on-tertiary-fixed-variant": "#812800", "error-container": "#ffdad6", "secondary-fixed": "#dbe1ff", "on-primary-container": "#e2e6ff", "on-primary-fixed": "#00174c", "surface-dim": "#d9d9e5", "tertiary-fixed": "#ffdbcf", "surface-tint": "#0052de", "surface-container-low": "#f3f3ff", "secondary-container": "#91abfe", "on-tertiary-container": "#ffe1d7", "slate-grey": "#1a1f26", "on-surface-variant": "#434655", "tertiary-container": "#b93d00", "surface-bright": "#faf8ff", "on-secondary-fixed": "#00174b", "surface-base": "#0f1216", "on-secondary": "#ffffff", "surface-container-lowest": "#ffffff", outline: "#737687", surface: "#faf8ff"}, borderRadius: {DEFAULT: "0.25rem", lg: "0.5rem", xl: "0.75rem", full: "9999px"}, spacing: {"safe-area": "64px", "container-padding": "4rem", "element-gap": "4rem", "grid-dot-size": "50px"}, fontFamily: {"display-xl-mobile": ["Outfit"], "display-kanji": ["sans-serif"], "body-md": ["Outfit"], "label-xs": ["Outfit"], "headline-sm": ["Outfit"], "display-xl": ["Outfit"], headline: ["Outfit"], display: ["Outfit"], body: ["Outfit"], label: ["Outfit"]}, fontSize: {"display-xl-mobile": ["48px", {lineHeight: "1", letterSpacing: "-0.02em", fontWeight: "900"}], "display-kanji": ["200px", {lineHeight: "1", fontWeight: "900"}], "body-md": ["16px", {lineHeight: "1.5", fontWeight: "400"}], "label-xs": ["12px", {lineHeight: "1", letterSpacing: "0.4em", fontWeight: "400"}], "headline-sm": ["24px", {lineHeight: "1.2", fontWeight: "700"}], "display-xl": ["110px", {lineHeight: "1", letterSpacing: "-0.04em", fontWeight: "900"}]}}}};</script>
-    <style>
-        .glass-panel {
-            background: rgba(29, 31, 40, 0.4);
-            backdrop-filter: blur(24px);
-            -webkit-backdrop-filter: blur(24px);
-            border: 1px solid theme('colors.stroke-white');
-        }
-
-        .glow-orb {
-            position: absolute;
-            border-radius: 50%;
-            background: theme('colors.primary');
-            opacity: 0.05;
-            filter: blur(160px);
-            pointer-events: none;
-            z-index: -1;
-        }
-
-        .corner-bracket {
-            position: absolute;
-            width: 48px;
-            height: 48px;
-            border: 1px solid theme('colors.stroke-white');
-            pointer-events: none;
-        }
-
-        .corner-bracket-tl { top: 0; left: 0; border-right: none; border-bottom: none; }
-        .corner-bracket-tr { top: 0; right: 0; border-left: none; border-bottom: none; }
-        .corner-bracket-bl { bottom: 0; left: 0; border-right: none; border-top: none; }
-        .corner-bracket-br { bottom: 0; right: 0; border-left: none; border-top: none; }
-
-        .btn-ghost {
-            border: 1px solid theme('colors.stroke-white');
-            background: transparent;
-            transition: all 0.3s ease;
-        }
-        
-        .btn-ghost:hover {
-            box-shadow: inset 0 0 20px theme('colors.primary-container');
-            border-color: theme('colors.primary-container');
-        }
-
-        .separator {
-            width: 48px;
-            height: 1px;
-            background-color: theme('colors.stroke-white');
-            margin: 0 auto;
-        }
-
-        .chip {
-            background-color: theme('colors.slate-grey');
-            opacity: 0.8;
-            padding: 4px 12px;
-            border-radius: theme('borderRadius.full');
-            border: 1px solid theme('colors.stroke-white');
-            display: inline-flex;
-            align-items: center;
-        }
-    </style>
   </head>
   <body>
     <!-- Navbar -->
@@ -108,57 +47,57 @@
     </nav>
 
     <!-- Product Features Section -->
-    <main class="flex-grow pt-[calc(theme('spacing.safe-area')+2rem)] px-container-padding pb-container-padding relative">
+    <main class="product-main">
       <!-- Ambient Background Glows -->
-      <div class="glow-orb w-[800px] h-[800px] top-[-200px] left-[-200px]"></div>
-      <div class="glow-orb w-[600px] h-[600px] bottom-[20%] right-[-100px] bg-primary-container"></div>
+      <div class="glow-orb glow-orb-tl"></div>
+      <div class="glow-orb glow-orb-br"></div>
       
       <!-- Safe Area Boundary Markers -->
-      <div class="corner-bracket corner-bracket-tl top-[100px] left-container-padding hidden md:block"></div>
-      <div class="corner-bracket corner-bracket-tr top-[100px] right-container-padding hidden md:block"></div>
-      <div class="corner-bracket corner-bracket-bl bottom-container-padding left-container-padding hidden md:block"></div>
-      <div class="corner-bracket corner-bracket-br bottom-container-padding right-container-padding hidden md:block"></div>
+      <div class="corner-bracket corner-bracket-tl bracket-pos-top-left hidden-mobile"></div>
+      <div class="corner-bracket corner-bracket-tr bracket-pos-top-right hidden-mobile"></div>
+      <div class="corner-bracket corner-bracket-bl bracket-pos-bottom-left hidden-mobile"></div>
+      <div class="corner-bracket corner-bracket-br bracket-pos-bottom-right hidden-mobile"></div>
 
       <!-- 1. Hero Section -->
-      <section class="min-h-[819px] flex flex-col justify-center items-center text-center relative mb-element-gap">
-        <div class="chip font-label-xs text-label-xs text-white mb-8">
-          <span class="material-symbols-outlined text-[16px] mr-2">bolt</span>
+      <section class="product-hero">
+        <div class="chip hero-chip">
+          <span class="material-symbols-outlined hero-chip-icon">bolt</span>
           PRODUCT DEEP DIVE
         </div>
-        <h1 class="font-display-xl text-display-xl text-white mb-6 max-w-5xl leading-tight">
-          Empower Your <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary to-primary-container">Workflow</span>
+        <h1 class="hero-title">
+          Empower Your <span class="hero-title-highlight">Workflow</span>
         </h1>
-        <p class="font-body-md text-body-md text-gray-300 max-w-2xl mx-auto mb-12">
+        <p class="hero-subtitle">
           Kyoboard transcends simple whiteboarding. It provides an enterprise-grade spatial canvas equipped with precision tools for high-stakes collaboration and architectural planning.
         </p>
       </section>
 
-      <div class="separator mb-element-gap"></div>
+      <div class="separator product-separator"></div>
 
       <!-- 2. Feature Deep Dive - Collaborative Drawing -->
-      <section class="mb-element-gap relative">
-        <div class="grid grid-cols-1 md:grid-cols-12 gap-8 items-center">
-          <div class="md:col-span-5 flex flex-col justify-center">
-            <div class="chip font-label-xs text-label-xs text-white mb-4 self-start">PRECISION TOOLS</div>
-            <h2 class="font-headline-sm text-headline-sm text-white mb-4">Collaborative Drawing</h2>
-            <p class="font-body-md text-body-md text-gray-300 mb-6">
+      <section class="feature-section">
+        <div class="feature-grid">
+          <div class="feature-text">
+            <div class="chip feature-chip">PRECISION TOOLS</div>
+            <h2 class="feature-title">Collaborative Drawing</h2>
+            <p class="feature-description">
               Experience near-zero latency with our proprietary rendering engine. Multi-user cursors track seamlessly across the infinite canvas, while pressure-sensitive pen tools translate every nuance of your stroke. Smart shape recognition instantly cleans up diagrams for presentation-ready assets.
             </p>
-            <ul class="space-y-4 font-body-md text-body-md text-gray-300">
-              <li class="flex items-center gap-3"><span class="material-symbols-outlined text-primary">draw</span> Pressure-sensitive ink rendering</li>
-              <li class="flex items-center gap-3"><span class="material-symbols-outlined text-primary">group</span> Real-time multi-user synchronization</li>
-              <li class="flex items-center gap-3"><span class="material-symbols-outlined text-primary">architecture</span> Intelligent shape auto-correction</li>
+            <ul class="feature-list">
+              <li class="feature-list-item"><span class="material-symbols-outlined feature-list-icon">draw</span> Pressure-sensitive ink rendering</li>
+              <li class="feature-list-item"><span class="material-symbols-outlined feature-list-icon">group</span> Real-time multi-user synchronization</li>
+              <li class="feature-list-item"><span class="material-symbols-outlined feature-list-icon">architecture</span> Intelligent shape auto-correction</li>
             </ul>
           </div>
-          <div class="md:col-span-7 glass-panel h-[500px] rounded-xl relative overflow-hidden flex items-center justify-center p-8 group">
-            <img alt="A high-end, dark-mode collaborative digital workspace. Several glowing neon blue cursors with names attached hover over a complex architectural wireframe diagram on a dark slate background. The UI is minimalist, featuring thin etched glass borders and subtle glowing radial gradients to indicate active tools. The atmosphere is highly professional, technical, and focused." class="absolute inset-0 w-full h-full object-cover opacity-40 mix-blend-luminosity group-hover:opacity-60 transition-opacity duration-500" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA4wQEyPhAed29rrOrGPMEA8PnDo11_SZYB2uapf0B_urB-RLULZX-cHqHYhMiLBDFqvw_sjZWcsArXAJH1tPRt3zGLzAC0cAwa9p99vV8_CKQLnpcuCRE3wTRFSf4CKhE565JaeNYN9Vlnog_iiy7i8zK2Wl6ZplYWZ3drHiVenC5lTjnvdkXgmja1Wmb8TVO6xhSJDh4hgCH1bMbASrB3rWydC6YhsB561xUWAeseMHR7Pjvku5B28_8apNbHGjdslw9dtS1E_JE"/>
+          <div class="glass-panel feature-image-container">
+            <img alt="A high-end, dark-mode collaborative digital workspace." class="feature-image" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA4wQEyPhAed29rrOrGPMEA8PnDo11_SZYB2uapf0B_urB-RLULZX-cHqHYhMiLBDFqvw_sjZWcsArXAJH1tPRt3zGLzAC0cAwa9p99vV8_CKQLnpcuCRE3wTRFSf4CKhE565JaeNYN9Vlnog_iiy7i8zK2Wl6ZplYWZ3drHiVenC5lTjnvdkXgmja1Wmb8TVO6xhSJDh4hgCH1bMbASrB3rWydC6YhsB561xUWAeseMHR7Pjvku5B28_8apNbHGjdslw9dtS1E_JE"/>
             <!-- Decorative UI Elements within the mock image -->
-            <div class="absolute top-4 left-4 flex gap-2">
-              <div class="w-8 h-8 rounded-full bg-primary-container/20 border border-primary flex items-center justify-center">
-                <span class="text-xs text-primary">JD</span>
+            <div class="feature-avatars">
+              <div class="feature-avatar feature-avatar-primary">
+                <span class="feature-avatar-text-primary">JD</span>
               </div>
-              <div class="w-8 h-8 rounded-full bg-tertiary/20 border border-tertiary flex items-center justify-center">
-                <span class="text-xs text-tertiary">AL</span>
+              <div class="feature-avatar feature-avatar-tertiary">
+                <span class="feature-avatar-text-tertiary">AL</span>
               </div>
             </div>
           </div>
@@ -166,52 +105,52 @@
       </section>
 
       <!-- 3. Feature Deep Dive - Intelligent Organization (Asymmetric Bento) -->
-      <section class="mb-element-gap">
-        <div class="text-center mb-12">
-          <div class="chip font-label-xs text-label-xs text-white mb-4">WORKSPACE MANAGEMENT</div>
-          <h2 class="font-headline-sm text-headline-sm text-white">Intelligent Organization</h2>
+      <section class="bento-section">
+        <div class="bento-header">
+          <div class="chip bento-chip">WORKSPACE MANAGEMENT</div>
+          <h2 class="bento-title">Intelligent Organization</h2>
         </div>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 h-auto md:h-[600px]">
+        <div class="bento-grid">
           <!-- Large Card -->
-          <div class="md:col-span-2 glass-panel rounded-xl p-8 flex flex-col justify-between relative overflow-hidden">
-            <div class="z-10 max-w-md">
-              <h3 class="font-headline-sm text-headline-sm text-white mb-2">Secure Rooms</h3>
-              <p class="font-body-md text-body-md text-gray-300">
+          <div class="glass-panel bento-card bento-card-large">
+            <div class="bento-card-content">
+              <h3 class="bento-card-title">Secure Rooms</h3>
+              <p class="bento-card-text">
                 Isolate projects into dedicated 'Rooms'. Implement granular role-based access control (RBAC) to ensure sensitive architectural plans and strategic wireframes are only visible to authorized stakeholders.
               </p>
             </div>
-            <div class="mt-8 flex gap-4 z-10">
-              <div class="glass-panel px-4 py-2 rounded flex items-center gap-2 border-primary/30">
-                <span class="material-symbols-outlined text-primary">lock</span>
-                <span class="font-label-xs text-label-xs text-white">PRIVATE ROOM</span>
+            <div class="bento-card-actions">
+              <div class="glass-panel bento-badge">
+                <span class="material-symbols-outlined bento-badge-icon">lock</span>
+                <span class="bento-badge-text">PRIVATE ROOM</span>
               </div>
             </div>
-            <div class="absolute bottom-0 right-0 w-2/3 h-2/3 bg-gradient-to-tl from-primary-container/20 to-transparent pointer-events-none"></div>
+            <div class="bento-card-gradient"></div>
           </div>
           <!-- Stacked Small Cards -->
-          <div class="flex flex-col gap-6">
-            <div class="glass-panel rounded-xl p-6 flex-1 flex flex-col justify-center">
-              <span class="material-symbols-outlined text-primary mb-4 text-3xl">folder_special</span>
-              <h3 class="font-body-md text-body-md font-bold text-white mb-2">Nested Folders</h3>
-              <p class="font-label-xs text-label-xs text-gray-300">Organize complex campaigns hierarchically.</p>
+          <div class="bento-stack">
+            <div class="glass-panel bento-card bento-card-small">
+              <span class="material-symbols-outlined bento-small-icon">folder_special</span>
+              <h3 class="bento-small-title">Nested Folders</h3>
+              <p class="bento-small-text">Organize complex campaigns hierarchically.</p>
             </div>
-            <div class="glass-panel rounded-xl p-6 flex-1 flex flex-col justify-center">
-              <span class="material-symbols-outlined text-primary mb-4 text-3xl">history</span>
-              <h3 class="font-body-md text-body-md font-bold text-white mb-2">Version Control</h3>
-              <p class="font-label-xs text-label-xs text-gray-300">Infinite undo history and snapshot states.</p>
+            <div class="glass-panel bento-card bento-card-small">
+              <span class="material-symbols-outlined bento-small-icon">history</span>
+              <h3 class="bento-small-title">Version Control</h3>
+              <p class="bento-small-text">Infinite undo history and snapshot states.</p>
             </div>
           </div>
         </div>
       </section>
 
       <!-- CTA -->
-      <section class="py-element-gap text-center relative border-t border-stroke-white">
-        <div class="glow-orb w-[400px] h-[400px] bottom-0 left-1/2 transform -translate-x-1/2"></div>
-        <h2 class="font-display-xl-mobile text-headline-sm tracking-tighter text-white mb-6">Ready to elevate your focus?</h2>
-        <p class="font-body-md text-body-md text-gray-300 mb-8 max-w-xl mx-auto">Join top-tier engineering and design teams using Kyoboard to structure their thoughts.</p>
-        <a href="login.html" class="btn-ghost font-headline-sm text-headline-sm text-white px-12 py-4 rounded-lg flex items-center justify-center gap-2 mx-auto">
+      <section class="cta-section">
+        <div class="glow-orb cta-glow"></div>
+        <h2 class="cta-title">Ready to elevate your focus?</h2>
+        <p class="cta-text">Join top-tier engineering and design teams using Kyoboard to structure their thoughts.</p>
+        <a href="login.html" class="btn-ghost cta-button">
           Start Your First Board
-          <span class="material-symbols-outlined">arrow_forward</span>
+          <span class="material-symbols-outlined cta-button-icon">arrow_forward</span>
         </a>
       </section>
     </main>
@@ -223,15 +162,77 @@
             <span class="brand-icon-sm"></span> Kyoboard
           </div>
           <div class="footer-links">
-            <a href="#">Privacy</a>
-            <a href="#">Terms</a>
-            <a href="#">Twitter</a>
-            <a href="#">LinkedIn</a>
+            <a href="#" onclick="event.preventDefault(); document.getElementById('terms-modal').showModal();">Terms</a>
+            <a href="https://github.com/grekg" target="_blank" rel="noopener noreferrer">GitHub</a>
+            <a href="https://www.linkedin.com/in/gregory-karakitsos-2298932aa" target="_blank" rel="noopener noreferrer">LinkedIn</a>
           </div>
         </div>
         <div class="copyright">© 2026 Kyoboard Platform Inc.</div>
       </div>
     </footer>
+
+    <!-- Terms Modal -->
+    <dialog id="terms-modal" class="terms-modal">
+      <!-- Header -->
+      <div class="terms-header">
+        <div>
+          <span class="terms-header-overline">LEGAL FRAMEWORK</span>
+          <h2 class="terms-header-title">Terms of Service</h2>
+        </div>
+        <button onclick="document.getElementById('terms-modal').close()" class="terms-close-btn">
+          <svg style="width: 1rem; height: 1rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+        </button>
+      </div>
+
+      <!-- Body Content -->
+      <div class="terms-body">
+        <div>
+          <div class="terms-section-heading">
+            <div class="terms-section-line"></div>
+            <span class="terms-section-title">01. INTRODUCTION</span>
+          </div>
+          <p>By accessing and using our real-time collaborative whiteboard app, you agree to comply with these Terms of Service.</p>
+        </div>
+        <div>
+          <div class="terms-section-heading">
+            <div class="terms-section-line"></div>
+            <span class="terms-section-title">02. USER RESPONSIBILITIES</span>
+          </div>
+          <ul class="terms-list">
+            <li>You are responsible for all activities that occur under your account.</li>
+            <li>Do not upload, post, or transmit any illegal, harmful, or abusive content onto our whiteboards.</li>
+          </ul>
+        </div>
+        <div>
+          <div class="terms-section-heading">
+            <div class="terms-section-line"></div>
+            <span class="terms-section-title">03. INTELLECTUAL PROPERTY</span>
+          </div>
+          <p>Your boards and their content remain your property. By using Kyoboard, you grant us permission to host and transmit this content to enable collaboration.</p>
+        </div>
+        <div>
+          <div class="terms-section-heading">
+            <div class="terms-section-line"></div>
+            <span class="terms-section-title">04. SERVICE AVAILABILITY</span>
+          </div>
+          <p>We strive to keep Kyoboard running flawlessly in real-time, but we do not guarantee uninterrupted service and are not responsible for data loss. We recommend exporting important whiteboards regularly.</p>
+        </div>
+      </div>
+
+      <!-- Footer (Sticky) -->
+      <div class="terms-footer">
+        <span class="terms-footer-date">LAST UPDATED: OCT 24, 2026</span>
+        <div class="terms-footer-actions">
+          <button onclick="document.getElementById('terms-modal').close()" class="terms-btn-dismiss">
+            Dismiss
+          </button>
+          <button onclick="document.getElementById('terms-modal').close()" class="terms-btn-accept">
+            I Accept
+          </button>
+        </div>
+      </div>
+    </dialog>
+
     <script src="js/config.js"></script>
   </body>
 </html>

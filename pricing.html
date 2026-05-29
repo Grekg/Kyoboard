@@ -225,15 +225,76 @@
             <span class="brand-icon-sm"></span> Kyoboard
           </div>
           <div class="footer-links">
-            <a href="#">Privacy</a>
-            <a href="#">Terms</a>
-            <a href="#">Twitter</a>
-            <a href="#">LinkedIn</a>
+            <a href="#" onclick="event.preventDefault(); document.getElementById('terms-modal').showModal();">Terms</a>
+            <a href="https://github.com/grekg" target="_blank" rel="noopener noreferrer">GitHub</a>
+            <a href="https://www.linkedin.com/in/gregory-karakitsos-2298932aa" target="_blank" rel="noopener noreferrer">LinkedIn</a>
           </div>
         </div>
         <div class="copyright">© 2026 Kyoboard Platform Inc.</div>
       </div>
     </footer>
+
+    <!-- Terms Modal -->
+    <dialog id="terms-modal" class="terms-modal">
+      <!-- Header -->
+      <div class="terms-header">
+        <div>
+          <span class="terms-header-overline">LEGAL FRAMEWORK</span>
+          <h2 class="terms-header-title">Terms of Service</h2>
+        </div>
+        <button onclick="document.getElementById('terms-modal').close()" class="terms-close-btn">
+          <svg style="width: 1rem; height: 1rem;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+        </button>
+      </div>
+
+      <!-- Body Content -->
+      <div class="terms-body">
+        <div>
+          <div class="terms-section-heading">
+            <div class="terms-section-line"></div>
+            <span class="terms-section-title">01. INTRODUCTION</span>
+          </div>
+          <p>By accessing and using our real-time collaborative whiteboard app, you agree to comply with these Terms of Service.</p>
+        </div>
+        <div>
+          <div class="terms-section-heading">
+            <div class="terms-section-line"></div>
+            <span class="terms-section-title">02. USER RESPONSIBILITIES</span>
+          </div>
+          <ul class="terms-list">
+            <li>You are responsible for all activities that occur under your account.</li>
+            <li>Do not upload, post, or transmit any illegal, harmful, or abusive content onto our whiteboards.</li>
+          </ul>
+        </div>
+        <div>
+          <div class="terms-section-heading">
+            <div class="terms-section-line"></div>
+            <span class="terms-section-title">03. INTELLECTUAL PROPERTY</span>
+          </div>
+          <p>Your boards and their content remain your property. By using Kyoboard, you grant us permission to host and transmit this content to enable collaboration.</p>
+        </div>
+        <div>
+          <div class="terms-section-heading">
+            <div class="terms-section-line"></div>
+            <span class="terms-section-title">04. SERVICE AVAILABILITY</span>
+          </div>
+          <p>We strive to keep Kyoboard running flawlessly in real-time, but we do not guarantee uninterrupted service and are not responsible for data loss. We recommend exporting important whiteboards regularly.</p>
+        </div>
+      </div>
+
+      <!-- Footer (Sticky) -->
+      <div class="terms-footer">
+        <span class="terms-footer-date">LAST UPDATED: OCT 24, 2026</span>
+        <div class="terms-footer-actions">
+          <button onclick="document.getElementById('terms-modal').close()" class="terms-btn-dismiss">
+            Dismiss
+          </button>
+          <button onclick="document.getElementById('terms-modal').close()" class="terms-btn-accept">
+            I Accept
+          </button>
+        </div>
+      </div>
+    </dialog>
 
     <script src="js/pricing.js"></script>
   </body>
