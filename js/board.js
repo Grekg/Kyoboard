@@ -20,6 +20,7 @@
   // User state
   let currentUser = null;
   let socket = null;
+  let activeUsersCount = 1;
 
   // DOM Elements
   const viewport = document.getElementById("viewport");
@@ -35,7 +36,7 @@
   const clearBtn = document.getElementById("clear");
   const fileInput = document.getElementById("file");
   const addNoteBtn = document.getElementById("add-note");
-  const addCardBtn = document.getElementById("add-card");
+  const addShapeBtn = document.getElementById("add-shape");
   const addTextBtn = document.getElementById("add-text");
   const panBtn = document.getElementById("pan-tool");
   const selectBtn = document.getElementById("select");
@@ -44,6 +45,7 @@
   const penMenu = document.getElementById("pen-menu");
   const eraserMenu = document.getElementById("eraser-menu");
   const textMenu = document.getElementById("text-menu");
+  const shapesMenu = document.getElementById("shapes-menu");
   const penSizeSlider = document.getElementById("pen-size-slider");
   const eraserSizeSlider = document.getElementById("eraser-size-slider");
   const colorSwatches = document.querySelectorAll(
@@ -95,6 +97,11 @@
       headers["Authorization"] = `Bearer ${token}`;
     }
     return headers;
+  }
+
+  function updateActiveUsersUI() {
+    const countEl = document.getElementById("active-users-count");
+    if (countEl) countEl.textContent = `${activeUsersCount} Active`;
   }
 
   // Initialize
@@ -150,6 +157,8 @@
     setupBoardName();
     setupShare();
     setupExport();
+
+    document.getElementById("board-wrap").addEventListener("scroll", function() { this.scrollTop = 0; this.scrollLeft = 0; });
   }
 
   function setupShare() {
@@ -234,34 +243,31 @@
     if (!exportBtn) return;
 
     exportBtn.addEventListener("click", () => {
-      try {
-        // Create a temporary canvas to composite everything
-        const exportCanvas = document.createElement("canvas");
-        exportCanvas.width = VIRTUAL_W;
-        exportCanvas.height = VIRTUAL_H;
-        const exportCtx = exportCanvas.getContext("2d");
+      const boardWrapEl = document.getElementById("board-wrap");
+      if (!boardWrapEl) return;
 
-        // Fill with a background color (white for visibility)
-        exportCtx.fillStyle = "#1a1a2e";
-        exportCtx.fillRect(0, 0, VIRTUAL_W, VIRTUAL_H);
+      const bottomBar = document.getElementById("bottom-bar");
+      if (bottomBar) bottomBar.style.display = "none";
 
-        // Draw the main canvas content
-        exportCtx.drawImage(canvas, 0, 0);
+      html2canvas(boardWrapEl, { backgroundColor: "#111827", scale: 2, useCORS: true })
+        .then((exportCanvas) => {
+          if (bottomBar) bottomBar.style.display = "flex";
+          // Export the canvas as PNG
+          const dataURL = exportCanvas.toDataURL("image/png");
 
-        // Export the canvas as PNG
-        const dataURL = exportCanvas.toDataURL("image/png");
+          // Create a temporary link to trigger download
+          const link = document.createElement("a");
+          link.download = `kyoboard-export-${Date.now()}.png`;
+          link.href = dataURL;
+          link.click();
 
-        // Create a temporary link to trigger download
-        const link = document.createElement("a");
-        link.download = `kyoboard-export-${Date.now()}.png`;
-        link.href = dataURL;
-        link.click();
-
-        showToast("Board exported successfully!");
-      } catch (err) {
-        console.error("Export failed:", err);
-        showToast("Export failed. Please try again.", true);
-      }
+          showToast("Board exported successfully!");
+        })
+        .catch((err) => {
+          if (bottomBar) bottomBar.style.display = "flex";
+          console.error("Export failed:", err);
+          showToast("Export failed. Please try again.", true);
+        });
     });
   }
 
@@ -311,12 +317,16 @@
       // Show active users
       if (data.users) {
         console.log("Active users:", data.users);
+        activeUsersCount = data.users.length;
+        updateActiveUsersUI();
       }
     });
 
     socket.on("user-joined", (data) => {
       console.log("User joined:", data.username);
       appendSystemMessage(`${data.username} joined the board`);
+      activeUsersCount++;
+      updateActiveUsersUI();
     });
 
     socket.on("user-left", (data) => {
@@ -327,6 +337,8 @@
         cursors[data.odId].remove();
         delete cursors[data.odId];
       }
+      activeUsersCount = Math.max(1, activeUsersCount - 1);
+      updateActiveUsersUI();
     });
 
     socket.on("cursor-update", (data) => {
@@ -494,12 +506,14 @@
         if (t === "pen") penMenu?.classList.toggle("hidden");
         if (t === "eraser") eraserMenu?.classList.toggle("hidden");
         if (t === "text") textMenu?.classList.toggle("hidden");
+        if (t === "shape") shapesMenu?.classList.toggle("hidden");
         return;
       }
 
       penMenu?.classList.add("hidden");
       eraserMenu?.classList.add("hidden");
       textMenu?.classList.add("hidden");
+      shapesMenu?.classList.add("hidden");
 
       tool = t;
       document
@@ -567,12 +581,19 @@
     addNoteBtn?.addEventListener("click", () =>
       addElement("sticky", { content: "New Note" }),
     );
-    addCardBtn?.addEventListener("click", () =>
-      addElement("card", { title: "Title", content: "Details" }),
-    );
+    addShapeBtn?.addEventListener("click", () => setActiveTool("shape", addShapeBtn));
     addTextBtn?.addEventListener("click", () =>
       addElement("text", { content: "Text" }),
     );
+
+    // Shape buttons
+    document.querySelectorAll(".shape-btn")?.forEach((btn) => {
+      btn.addEventListener("click", (e) => {
+        const shapeType = e.currentTarget.dataset.shape;
+        addElement("shape", { shapeType: shapeType });
+        shapesMenu?.classList.add("hidden");
+      });
+    });
 
     // File upload
     fileInput?.addEventListener("change", (e) => {
@@ -808,7 +829,9 @@
         ? "note-item"
         : msg.kind === "card"
           ? "card-item"
-          : "file-item"
+          : msg.kind === "shape"
+            ? `shape-item shape-${msg.shapeType}`
+            : "file-item"
     }`;
     wrap.setAttribute(
       "data-id",
@@ -827,7 +850,13 @@
     if (msg.kind === "image") {
       const img = document.createElement("img");
       if (msg.data) img.src = msg.data;
-      img.style.width = msg.width ? msg.width + "px" : "200px";
+      wrap.style.width = msg.width ? msg.width + "px" : "300px";
+      wrap.style.height = msg.height ? msg.height + "px" : "auto";
+      img.style.width = "100%";
+      img.style.height = "100%";
+      img.style.objectFit = "contain";
+      img.style.display = "block";
+      img.draggable = false;
       wrap.appendChild(img);
     } else if (msg.kind === "sticky" || msg.kind === "text") {
       const content = document.createElement("div");
@@ -837,9 +866,26 @@
         msg.content || (msg.kind === "sticky" ? "New Note" : "Text");
       if (msg.kind === "text") {
         wrap.style.background = "transparent";
-        wrap.style.color = "#fff";
+        wrap.style.color = "var(--text-main)";
         wrap.style.boxShadow = "none";
+        wrap.style.border = "1px dashed transparent";
+        wrap.style.width = msg.width ? msg.width + "px" : "250px";
+        wrap.style.height = msg.height ? msg.height + "px" : "auto";
+        
+        // Push text down by 20px so the absolute .drag-handle doesn't block clicks
+        content.style.marginTop = "20px"; 
         content.style.fontSize = "24px";
+        content.style.width = "100%";
+        content.style.height = "calc(100% - 20px)";
+        content.style.minHeight = "40px";
+        content.style.outline = "none";
+        content.style.wordBreak = "break-word";
+        content.style.whiteSpace = "pre-wrap";
+        content.style.cursor = "text";
+        
+        // Add visual feedback on hover so the user knows where the boundaries are
+        wrap.addEventListener("mouseenter", () => wrap.style.borderColor = "rgba(255, 255, 255, 0.2)");
+        wrap.addEventListener("mouseleave", () => wrap.style.borderColor = "transparent");
       }
       wrap.appendChild(content);
 
@@ -870,6 +916,14 @@
           content: body.innerText,
         });
       });
+    } else if (msg.kind === "shape") {
+      dragHandle.style.width = "100%";
+      dragHandle.style.height = "100%";
+      dragHandle.style.position = "absolute";
+      dragHandle.style.top = "0";
+      dragHandle.style.left = "0";
+      dragHandle.style.cursor = "grab";
+      dragHandle.style.zIndex = "10";
     }
 
     // Resize handle
@@ -905,8 +959,9 @@
     if (msg.top !== undefined) el.style.top = msg.top + "px";
     if (msg.width !== undefined) {
       el.style.width = msg.width + "px";
-      const img = el.querySelector("img");
-      if (img) img.style.width = "100%";
+    }
+    if (msg.height !== undefined) {
+      el.style.height = msg.height + "px";
     }
     if (msg.content !== undefined) {
       const contentEl = el.querySelector("[contenteditable]");
@@ -924,7 +979,8 @@
       startY = 0,
       startLeft = 0,
       startTop = 0,
-      startW = 0;
+      startW = 0,
+      startH = 0;
 
     function onDown(e) {
       if (e.button !== 0) return;
@@ -935,7 +991,9 @@
         resizing = true;
         resizeTrigger.setPointerCapture(e.pointerId);
         startX = e.clientX;
+        startY = e.clientY;
         startW = parseFloat(el.style.width) || el.offsetWidth;
+        startH = parseFloat(el.style.height) || el.offsetHeight;
         window.addEventListener("pointermove", onMove);
         window.addEventListener("pointerup", onUp);
         return;
@@ -971,9 +1029,13 @@
       }
       if (resizing) {
         const dxScreen = e.clientX - startX;
+        const dyScreen = e.clientY - startY;
         const dxWorld = dxScreen / scale;
+        const dyWorld = dyScreen / scale;
         const newW = Math.max(50, startW + dxWorld);
+        const newH = Math.max(50, startH + dyWorld);
         el.style.width = newW + "px";
+        el.style.height = newH + "px";
       }
     }
 
@@ -1001,6 +1063,7 @@
         socket?.emit("canvas-element-update", {
           id,
           width: parseFloat(el.style.width),
+          height: parseFloat(el.style.height),
         });
       }
 

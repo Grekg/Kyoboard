@@ -165,13 +165,27 @@
         </div>
 
         <button
-          id="add-card"
+          id="add-shape"
           class="btn-tool"
-          title="Shape/Card"
-          data-tool="card"
+          title="Shapes"
+          data-tool="shape"
         >
-          <span class="material-icons-outlined">crop_din</span>
+          <span class="material-icons-outlined">category</span>
         </button>
+        <div id="shapes-menu" class="tool-flyout hidden">
+          <div class="shape-picker" style="display: flex; gap: 0.5rem;">
+            <button class="icon-btn-small shape-btn" data-shape="square" title="Square">
+              <span class="material-icons-outlined">crop_square</span>
+            </button>
+            <button class="icon-btn-small shape-btn" data-shape="circle" title="Circle">
+              <span class="material-icons-outlined">circle</span>
+            </button>
+            <button class="icon-btn-small shape-btn" data-shape="triangle" title="Triangle">
+              <span class="material-icons-outlined">change_history</span>
+            </button>
+          </div>
+        </div>
+
         <button
           id="add-note"
           class="btn-tool"
@@ -328,7 +342,7 @@
             >
             Team Chat
             <div class="status-dot"></div>
-            <span class="text-xs text-muted ms-auto">12 Active</span>
+            <span id="active-users-count" class="text-xs text-muted ms-auto">1 Active</span>
           </div>
 
           <div id="messages">
@@ -354,6 +368,7 @@
 
     <!-- Socket.io Client -->
     <script src="https://cdn.socket.io/4.7.4/socket.io.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
     <script src="js/config.js"></script>
     <script src="js/board.js"></script>
     <script>

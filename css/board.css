@@ -549,10 +549,28 @@ body {
   min-width: 150px;
   min-height: 100px;
   border-radius: 4px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
 .card-item {
   box-shadow: var(--shadow-sm);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
+
+.note-content, .card-body {
+  word-break: break-word;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+  width: 100%;
+  flex: 1;
+  overflow-y: auto;
+  scrollbar-width: none; /* Firefox */
+  outline: none;
+}
+.note-content::-webkit-scrollbar, .card-body::-webkit-scrollbar { display: none; }
 .drag-handle {
   height: 20px;
   cursor: grab;
@@ -569,6 +587,7 @@ body {
   right: 0;
   cursor: nwse-resize;
   background: transparent;
+  z-index: 50 !important;
 }
 /* Visual resize handle for clarity */
 .resize-handle::after {
@@ -624,6 +643,23 @@ body {
   pointer-events: auto;
   cursor: nwse-resize;
   z-index: 25;
+}
+
+/* Shape Tool Specifics */
+.shape-item {
+  width: 100px;
+  height: 100px;
+  background-color: var(--primary);
+  border: 2px solid var(--border-color);
+}
+
+.shape-circle {
+  border-radius: 50%;
+}
+
+.shape-triangle {
+  clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+  border: none;
 }
 
 /* Shared notes textarea */
