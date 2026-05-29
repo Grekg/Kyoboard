@@ -704,6 +704,8 @@ body {
     transform: translateX(-50%);
     flex-direction: row;
     width: auto;
+    max-width: 95vw;
+    overflow-x: auto;
     padding: 0.25rem 0.5rem;
     border-radius: 99px;
   }

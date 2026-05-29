@@ -161,3 +161,20 @@
     justify-content: center;
   }
 }
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .grid-3 {
+    grid-template-columns: 1fr;
+  }
+  .hero-section, .features-section, .logos-section {
+    padding: 3rem 1rem;
+  }
+  .display-title {
+    font-size: 2.5rem;
+  }
+  .glass-panel {
+    width: 100%;
+    box-sizing: border-box;
+  }
+}

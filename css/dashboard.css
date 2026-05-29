@@ -421,3 +421,31 @@ body {
   flex-direction: column;
   text-align: center;
 }
+
+/* === Mobile Responsive === */
+@media (max-width: 768px) {
+  .sidebar {
+    display: none;
+  }
+  
+  .top-bar {
+    padding: 0 1rem;
+  }
+  
+  .search-bar {
+    width: 40px;
+    overflow: hidden;
+    transition: width 0.3s ease;
+    background: transparent;
+  }
+
+  .search-bar:focus-within {
+    width: 200px;
+    background: #f3f4f6;
+  }
+
+  .modal-content {
+    width: 95%;
+    padding: 1.5rem;
+  }
+}

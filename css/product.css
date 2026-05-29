@@ -519,3 +519,20 @@
     display: inline-flex;
     align-items: center;
 }
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .feature-grid, .bento-grid {
+    grid-template-columns: 1fr;
+  }
+  .product-hero, .feature-section, .bento-section, .cta-section {
+    padding: 3rem 1rem;
+  }
+  .hero-title {
+    font-size: 2.5rem;
+  }
+  .glass-panel {
+    width: 100%;
+    box-sizing: border-box;
+  }
+}
