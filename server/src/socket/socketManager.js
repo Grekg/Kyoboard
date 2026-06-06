@@ -2,28 +2,25 @@ const cookie = require("cookie");
 const { verifyToken } = require("../utils/jwt");
 const prisma = require("../config/db");
 
-// Track active users per board room
-const boardRooms = new Map(); // boardId -> Map(socketId -> userInfo)
+// track users
+const boardRooms = new Map();
 
-// Debounce timers for notes saving
+// notes debounce
 const notesDebounce = new Map();
 
-// Canvas state batch save timers
+// canvas batch saves
 const canvasBatchTimers = new Map();
 const canvasPendingStrokes = new Map();
 
-/**
- * Initialize Socket.io with the HTTP server
- * @param {Server} io - Socket.io server instance
- */
+// init socket io
 function initializeSocket(io) {
-  // Authentication middleware for Socket.io
+  // auth middleware
   io.use(async (socket, next) => {
     try {
-      // Get token from auth handshake OR cookies
+      // grab token
       let token = socket.handshake.auth?.token;
 
-      // Fallback to cookies
+      // fallback cookies
       if (!token) {
         const cookies = cookie.parse(socket.handshake.headers.cookie || "");
         token = cookies.token;
@@ -38,7 +35,7 @@ function initializeSocket(io) {
         return next(new Error("Invalid token"));
       }
 
-      // Fetch user
+      // get user
       const user = await prisma.user.findUnique({
         where: { id: decoded.userId },
         select: {
@@ -65,12 +62,10 @@ function initializeSocket(io) {
 
     let currentBoardId = null;
 
-    /**
-     * Join a board room
-     */
+    // join board
     socket.on("join-board", async (boardId) => {
       try {
-        // Verify board exists
+        // check board
         const board = await prisma.board.findUnique({
           where: { id: boardId },
           include: {
@@ -83,7 +78,7 @@ function initializeSocket(io) {
           return;
         }
 
-        // Leave previous room if any
+        // leave old room
         if (currentBoardId) {
           socket.leave(currentBoardId);
           removeUserFromRoom(currentBoardId, socket.id);
@@ -94,12 +89,12 @@ function initializeSocket(io) {
           });
         }
 
-        // Join new room
+        // join new room
         currentBoardId = boardId;
         socket.join(boardId);
         addUserToRoom(boardId, socket.id, socket.user);
 
-        // Load chat history
+        // load chat
         const messages = await prisma.chatMessage.findMany({
           where: { boardId },
           orderBy: { createdAt: "asc" },
@@ -115,7 +110,7 @@ function initializeSocket(io) {
           },
         });
 
-        // Send initial state to client
+        // send state
         socket.emit("board-state", {
           board: {
             id: board.id,
@@ -132,7 +127,7 @@ function initializeSocket(io) {
           users: getActiveUsers(boardId),
         });
 
-        // Notify others
+        // broadcast join
         socket.to(boardId).emit("user-joined", {
           odId: socket.id,
           userId: socket.user.id,
@@ -147,9 +142,7 @@ function initializeSocket(io) {
       }
     });
 
-    /**
-     * Live cursor movement (throttled on client, broadcast immediately)
-     */
+    // cursor move
     socket.on("cursor-move", (data) => {
       if (!currentBoardId) return;
 
@@ -163,25 +156,23 @@ function initializeSocket(io) {
       });
     });
 
-    /**
-     * Canvas stroke - broadcast and batch save
-     */
+    // canvas stroke
     socket.on("canvas-stroke", (strokeData) => {
       if (!currentBoardId) return;
 
-      // Broadcast to others immediately
+      // broadcast stroke
       socket.to(currentBoardId).emit("canvas-stroke", {
         ...strokeData,
         odId: socket.user.id,
       });
 
-      // Queue for batch save
+      // queue save
       if (!canvasPendingStrokes.has(currentBoardId)) {
         canvasPendingStrokes.set(currentBoardId, []);
       }
       canvasPendingStrokes.get(currentBoardId).push(strokeData);
 
-      // Set up batch save timer (every 5 seconds)
+      // batch timer
       if (!canvasBatchTimers.has(currentBoardId)) {
         const timer = setTimeout(async () => {
           await saveCanvasStrokes(currentBoardId);
@@ -191,9 +182,7 @@ function initializeSocket(io) {
       }
     });
 
-    /**
-     * Canvas element (sticky notes, shapes, etc.)
-     */
+    // canvas element
     socket.on("canvas-element", (elementData) => {
       if (!currentBoardId) return;
 
@@ -202,13 +191,11 @@ function initializeSocket(io) {
         odId: socket.user.id,
       });
 
-      // Save element to canvas state
+      // save element
       saveCanvasElement(currentBoardId, elementData);
     });
 
-    /**
-     * Canvas element update (move, resize, edit)
-     */
+    // update element
     socket.on("canvas-element-update", (updateData) => {
       if (!currentBoardId) return;
 
@@ -218,9 +205,7 @@ function initializeSocket(io) {
       });
     });
 
-    /**
-     * Canvas clear
-     */
+    // clear canvas
     socket.on("canvas-clear", async () => {
       if (!currentBoardId) return;
 
@@ -228,7 +213,7 @@ function initializeSocket(io) {
         odId: socket.user.id,
       });
 
-      // Clear in database
+      // clear db
       try {
         await prisma.board.update({
           where: { id: currentBoardId },
@@ -239,14 +224,12 @@ function initializeSocket(io) {
       }
     });
 
-    /**
-     * Chat message
-     */
+    // chat msg
     socket.on("chat-message", async (content) => {
       if (!currentBoardId || !content?.trim()) return;
 
       try {
-        // Save to database
+        // save msg
         const message = await prisma.chatMessage.create({
           data: {
             content: content.trim(),
@@ -264,7 +247,7 @@ function initializeSocket(io) {
           },
         });
 
-        // Broadcast to everyone in room (including sender)
+        // broadcast msg
         io.to(currentBoardId).emit("chat-message", {
           id: message.id,
           content: message.content,
@@ -276,20 +259,18 @@ function initializeSocket(io) {
       }
     });
 
-    /**
-     * Shared notes update
-     */
+    // update notes
     socket.on("notes-update", (content) => {
       if (!currentBoardId) return;
 
-      // Broadcast to others immediately
+      // broadcast stroke
       socket.to(currentBoardId).emit("notes-update", {
         content,
         odId: socket.user.id,
         username: socket.user.username,
       });
 
-      // Debounce save (500ms)
+      // debounce save
       if (notesDebounce.has(currentBoardId)) {
         clearTimeout(notesDebounce.get(currentBoardId));
       }
@@ -317,9 +298,7 @@ function initializeSocket(io) {
       notesDebounce.set(currentBoardId, timer);
     });
 
-    /**
-     * Board name update
-     */
+    // update board name
     socket.on("board-name-update", async (name) => {
       if (!currentBoardId || !name?.trim()) return;
 
@@ -338,9 +317,7 @@ function initializeSocket(io) {
       }
     });
 
-    /**
-     * Leave board room
-     */
+    // leave board
     socket.on("leave-board", () => {
       if (currentBoardId) {
         socket.leave(currentBoardId);
@@ -354,9 +331,7 @@ function initializeSocket(io) {
       }
     });
 
-    /**
-     * Disconnect
-     */
+    // disconnect
     socket.on("disconnect", () => {
       console.log(`User disconnected: ${socket.user.username} (${socket.id})`);
 
@@ -372,9 +347,7 @@ function initializeSocket(io) {
   });
 }
 
-/**
- * Add user to room tracking
- */
+// add user
 function addUserToRoom(boardId, socketId, user) {
   if (!boardRooms.has(boardId)) {
     boardRooms.set(boardId, new Map());
@@ -386,9 +359,7 @@ function addUserToRoom(boardId, socketId, user) {
   });
 }
 
-/**
- * Remove user from room tracking
- */
+// rm user
 function removeUserFromRoom(boardId, socketId) {
   if (boardRooms.has(boardId)) {
     boardRooms.get(boardId).delete(socketId);
@@ -398,17 +369,13 @@ function removeUserFromRoom(boardId, socketId) {
   }
 }
 
-/**
- * Get active users in a room
- */
+// get active users
 function getActiveUsers(boardId) {
   if (!boardRooms.has(boardId)) return [];
   return Array.from(boardRooms.get(boardId).values());
 }
 
-/**
- * Save pending canvas strokes to database
- */
+// save strokes
 async function saveCanvasStrokes(boardId) {
   const strokes = canvasPendingStrokes.get(boardId);
   if (!strokes || strokes.length === 0) return;
@@ -433,9 +400,7 @@ async function saveCanvasStrokes(boardId) {
   }
 }
 
-/**
- * Save canvas element to database
- */
+// save element
 async function saveCanvasElement(boardId, element) {
   try {
     const board = await prisma.board.findUnique({
@@ -446,7 +411,7 @@ async function saveCanvasElement(boardId, element) {
     const currentState = board?.canvasState || { strokes: [], elements: [] };
     if (!currentState.elements) currentState.elements = [];
 
-    // Check if element exists (update) or is new (add)
+    // update or add
     const existingIndex = currentState.elements.findIndex(
       (e) => e.id === element.id,
     );

@@ -1,23 +1,20 @@
-/**
- * Configuration for Kyoboard application
- * Automatically detects environment and sets appropriate API URLs
- */
+// app config
 
 (function () {
-  // Detect if we're in production (not localhost)
+  // check if prod
   const isProduction =
     !window.location.hostname.includes("localhost") &&
     !window.location.hostname.includes("127.0.0.1");
 
-  // Production URL - Update this to your DigitalOcean domain
+  // prod urls
   const PRODUCTION_API = window.location.origin;
   const PRODUCTION_SOCKET = window.location.origin;
 
-  // Development URLs
+  // dev urls
   const DEV_API = "http://localhost:3000";
   const DEV_SOCKET = "http://localhost:3000";
 
-  // Export configuration
+  // export config
   window.KYOBOARD_CONFIG = {
     API_BASE: isProduction ? `${PRODUCTION_API}/api` : `${DEV_API}/api`,
     SOCKET_URL: isProduction ? PRODUCTION_SOCKET : DEV_SOCKET,

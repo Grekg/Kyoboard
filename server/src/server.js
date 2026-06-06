@@ -27,7 +27,6 @@ const allowedOrigins = [
 
 const corsOptions = {
   origin: function (origin, callback) {
-    // Allow requests with no origin (like mobile apps or curl)
     if (!origin) return callback(null, true);
     if (allowedOrigins.includes(origin)) {
       callback(null, true);
@@ -41,7 +40,7 @@ const corsOptions = {
   allowedHeaders: ["Content-Type", "Authorization"],
 };
 
-// Socket.io with CORS
+// socket io cors
 const io = new Server(server, {
   cors: {
     origin: allowedOrigins,
@@ -49,15 +48,14 @@ const io = new Server(server, {
   },
 });
 
-// Middleware
+// middleware
 app.use(cors(corsOptions));
-app.use(express.json({ limit: "10mb" })); // Large limit for canvas state
+app.use(express.json({ limit: "10mb" })); // large limit
 app.use(cookieParser());
 app.use(passport.initialize());
 
-// Serve static frontend files in production
+// serve static files
 if (process.env.NODE_ENV === "production") {
-  // Docker uses ./public, non-Docker uses ../../
   const fs = require("fs");
   const publicPath = fs.existsSync(path.join(__dirname, "../public"))
     ? path.join(__dirname, "../public")
@@ -65,20 +63,20 @@ if (process.env.NODE_ENV === "production") {
   app.use(express.static(publicPath));
 }
 
-// API routes
+// api routes
 app.use("/api/auth", authRoutes);
 app.use("/api/boards", boardRoutes);
 app.use("/api/users", userRoutes);
 
-// Health check
+// health check
 app.get("/api/health", (req, res) => {
   res.json({ status: "ok", timestamp: new Date().toISOString() });
 });
 
-// Initialize Socket.io
+// init sockets
 initializeSocket(io);
 
-// Serve Product Page
+// serve product
 app.get("/product", (req, res) => {
   const fs = require("fs");
   const publicPath = fs.existsSync(path.join(__dirname, "../public"))
@@ -87,7 +85,7 @@ app.get("/product", (req, res) => {
   res.sendFile(path.join(publicPath, "product.html"));
 });
 
-// Serve Pricing Page
+// serve pricing
 app.get("/pricing", (req, res) => {
   const fs = require("fs");
   const publicPath = fs.existsSync(path.join(__dirname, "../public"))
@@ -96,7 +94,7 @@ app.get("/pricing", (req, res) => {
   res.sendFile(path.join(publicPath, "pricing.html"));
 });
 
-// Serve index.html for SPA routes in production
+// spa fallback
 if (process.env.NODE_ENV === "production") {
   const fs = require("fs");
   const publicPath = fs.existsSync(path.join(__dirname, "../public"))
@@ -104,11 +102,9 @@ if (process.env.NODE_ENV === "production") {
     : path.join(__dirname, "../../");
 
   app.get(/.*/, (req, res, next) => {
-    // Skip API routes
     if (req.path.startsWith("/api")) {
       return next();
     }
-    // Check if file exists, otherwise serve 404.html
     const filePath = path.join(publicPath, req.path);
     res.sendFile(filePath, (err) => {
       if (err) {
@@ -118,7 +114,7 @@ if (process.env.NODE_ENV === "production") {
   });
 }
 
-// Error handling middleware
+// error handler
 app.use((err, req, res, next) => {
   console.error("Server error:", err);
   if (process.env.NODE_ENV === "production") {
@@ -131,7 +127,7 @@ app.use((err, req, res, next) => {
   res.status(500).json({ error: "Internal server error" });
 });
 
-// Start server
+// start server
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
   console.log(`
@@ -146,7 +142,7 @@ server.listen(PORT, () => {
   `);
 });
 
-// Graceful shutdown
+// graceful shutdown
 process.on("SIGTERM", () => {
   console.log("SIGTERM received, shutting down gracefully");
   server.close(() => {

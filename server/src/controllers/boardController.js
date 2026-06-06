@@ -1,9 +1,6 @@
 const prisma = require("../config/db");
 
-/**
- * GET /api/boards
- * List all boards owned by the authenticated user
- */
+// get user boards
 async function listBoards(req, res) {
   try {
     const boards = await prisma.board.findMany({
@@ -25,10 +22,7 @@ async function listBoards(req, res) {
   }
 }
 
-/**
- * POST /api/boards
- * Create a new board
- */
+// create board
 async function createBoard(req, res) {
   try {
     const { name } = req.body;
@@ -46,7 +40,7 @@ async function createBoard(req, res) {
       },
     });
 
-    // Create empty shared note for this board
+    // create empty note
     await prisma.sharedNote.create({
       data: {
         boardId: board.id,
@@ -61,10 +55,7 @@ async function createBoard(req, res) {
   }
 }
 
-/**
- * GET /api/boards/:id
- * Get a board by ID (any authenticated user with the link can access)
- */
+// get board by id
 async function getBoard(req, res) {
   try {
     const { id } = req.params;
@@ -100,22 +91,19 @@ async function getBoard(req, res) {
   }
 }
 
-/**
- * PUT /api/boards/:id
- * Update a board (name, canvas state)
- */
+// update board
 async function updateBoard(req, res) {
   try {
     const { id } = req.params;
     const { name, canvasState, thumbnail } = req.body;
 
-    // Check board exists
+    // check exists
     const existing = await prisma.board.findUnique({ where: { id } });
     if (!existing) {
       return res.status(404).json({ error: "Board not found" });
     }
 
-    // Build update data
+    // build update
     const updateData = {};
     if (name !== undefined) updateData.name = name;
     if (canvasState !== undefined) updateData.canvasState = canvasState;
@@ -138,15 +126,12 @@ async function updateBoard(req, res) {
   }
 }
 
-/**
- * DELETE /api/boards/:id
- * Delete a board (only owner can delete)
- */
+// delete board
 async function deleteBoard(req, res) {
   try {
     const { id } = req.params;
 
-    // Check ownership
+    // check ownership
     const board = await prisma.board.findUnique({ where: { id } });
     if (!board) {
       return res.status(404).json({ error: "Board not found" });
@@ -167,10 +152,7 @@ async function deleteBoard(req, res) {
   }
 }
 
-/**
- * GET /api/boards/:id/messages
- * Get chat messages for a board (paginated)
- */
+// get chat msgs
 async function getMessages(req, res) {
   try {
     const { id } = req.params;
@@ -196,7 +178,7 @@ async function getMessages(req, res) {
       },
     });
 
-    // Return in chronological order
+    // return chronologically
     return res.json({ messages: messages.reverse() });
   } catch (error) {
     console.error("Get messages error:", error);
@@ -204,10 +186,7 @@ async function getMessages(req, res) {
   }
 }
 
-/**
- * GET /api/boards/:id/notes
- * Get shared notes for a board
- */
+// get shared notes
 async function getNotes(req, res) {
   try {
     const { id } = req.params;

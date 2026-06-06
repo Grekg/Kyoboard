@@ -1,9 +1,6 @@
-// Landing Page Logic (index.js)
-
-// Placeholder for future interactivity
-// e.g. Animate elements on scroll, Handle newsletter signup, etc.
+// landing page logic
 console.log("Kyoboard - Landing Page Loaded");
 
 document.querySelector(".hero-input")?.addEventListener("focus", () => {
-  // Optional UI effect
+  // ui effect
 });

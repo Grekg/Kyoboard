@@ -8,10 +8,10 @@
   const submitBtn = form.querySelector('button[type="submit"]');
   const footerText = document.querySelector(".footer-text");
 
-  // Check if we need to add signup fields
+  // signup mode check
   let isSignupMode = false;
 
-  // URL Params Handling
+  // url params
   const urlParams = new URLSearchParams(window.location.search);
   const tokenParam = urlParams.get("token");
   const errorParam = urlParams.get("error");
@@ -23,26 +23,17 @@
 
   if (tokenParam) {
     localStorage.setItem("kyoboard_token", tokenParam);
-    // Cleanup URL
+    // clean url
     window.history.replaceState({}, document.title, window.location.pathname);
   }
 
-  if (modeParam === "signup") {
-    // We'll call toggleSignupMode but we need to wait for DOM or call it carefully
-    // Since script is likely at bottom of body, DOM is ready.
-    // However, toggleSignupMode relies on `isSignupMode` variable.
-    // Let's call it after definition or just set variable?
-    // toggleSignupMode() toggles the state. So if isSignupMode is false, it makes it true.
-    // We'll call it below.
-  }
-
-  // Check if already logged in
+  // check auth
   checkAuth();
 
   async function checkAuth() {
     try {
       const token = localStorage.getItem("kyoboard_token");
-      if (!token) return; // No token, stay on login page
+      if (!token) return;
 
       const res = await fetch(`${API_BASE}/auth/me`, {
         headers: { Authorization: `Bearer ${token}` },
@@ -52,11 +43,10 @@
         window.location.href = "dashboard.html";
       }
     } catch (e) {
-      // Not logged in, stay on page
     }
   }
 
-  // Toggle between login and signup
+  // toggle signup
   const signupLink = footerText?.querySelector(".link-highlight");
   if (signupLink) {
     signupLink.addEventListener("click", (e) => {
@@ -65,12 +55,12 @@
     });
   }
 
-  // Auto-toggle if requested
+  // auto-toggle
   if (modeParam === "signup") {
     toggleSignupMode();
   }
 
-  // Google Login
+  // google login
   const googleBtn = document.getElementById("google-login-btn");
   if (googleBtn) {
     googleBtn.addEventListener("click", () => {
@@ -91,7 +81,7 @@
       footerText.innerHTML =
         'Already have an account? <a href="#" class="link-highlight">Log In</a>';
 
-      // Add username field if not present
+      // add username
       if (!document.getElementById("username")) {
         const usernameGroup = document.createElement("div");
         usernameGroup.className = "form-group";
@@ -109,12 +99,12 @@
       footerText.innerHTML =
         'Don\'t have an account? <a href="#" class="link-highlight">Request Access</a>';
 
-      // Remove username field
+      // rm username
       const usernameGroup = document.getElementById("username-group");
       if (usernameGroup) usernameGroup.remove();
     }
 
-    // Re-attach link listener
+    // re-attach listener
     const newLink = footerText.querySelector(".link-highlight");
     newLink.addEventListener("click", (e) => {
       e.preventDefault();
@@ -122,7 +112,7 @@
     });
   }
 
-  // Form submission
+  // form submit
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
 
@@ -131,7 +121,7 @@
     const usernameEl = document.getElementById("username");
     const username = usernameEl?.value.trim();
 
-    // Validation
+    // validate
     if (!email || !password) {
       showError("Please fill in all fields");
       return;
@@ -147,7 +137,7 @@
       return;
     }
 
-    // Disable button
+    // disable btn
     submitBtn.disabled = true;
     submitBtn.textContent = isSignupMode
       ? "Creating Account..."
@@ -177,7 +167,7 @@
         throw new Error(data.error || "Authentication failed");
       }
 
-      // Store token and user info in localStorage
+      // save auth
       if (data.token) {
         localStorage.setItem("kyoboard_token", data.token);
       }
@@ -201,7 +191,7 @@
   });
 
   function showError(message) {
-    // Remove existing error
+    // rm old error
     const existing = document.querySelector(".error-message");
     if (existing) existing.remove();
 
@@ -220,7 +210,7 @@
 
     form.insertBefore(errorDiv, form.firstChild);
 
-    // Auto-remove after 5 seconds
+    // auto-remove 5s
     setTimeout(() => errorDiv.remove(), 5000);
   }
 })();

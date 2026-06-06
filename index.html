@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="css/index.css" />
   </head>
   <body>
-    <!-- Navbar -->
+    <!-- nav -->
     <nav class="navbar">
       <div class="container nav-container">
         <a href="index.html" class="nav-brand">
@@ -43,80 +43,7 @@
       </div>
     </nav>
 
-    <!-- Pricing Section (Preview on Landing Page??) 
-         Wait, looking at uploaded_image_4, it looks like a Landing/Pricing hybrid or maybe just the Pricing page?
-         
-         Uploaded Image 4 (Fourth Photo) check:
-         - "Choose the right plan for your team"
-         - Pricing cards below.
-         
-         Wait, user said "landing page like the fourth photo".
-         The fourth photo TEXT says "Choose the right plan for your team".
-         BUT usually the "Landing Page" is general info.
-         
-         Maybe the user considers the "Pricing Page" design as the Landing Page?
-         OR maybe they want that Header style?
-         
-         Let's look at uploaded_image_4 again.
-         It has "Whiteboard Platform" logo. Nav: Product, Solutions, Pricing, Resources.
-         Headline: "Choose the right plan for your team".
-         
-         If the USER calls this the "Landing Page", I should implement THIS as index.html.
-         
-         However, the user ALSO asked for "a page for the pricing like in the second photo".
-         Let's check second photo (uploaded_image_1).
-         Second photo looks... nearly identical to the fourth photo? 
-         
-         Let's re-examine images.
-         Image 0: Login
-         Image 1: Pricing?
-         Image 2: Dashboard?
-         Image 3: Logo?
-         Image 4: "Landing page like the fourth photo".
-         
-         If image 1 and 4 are similar, maybe one shows "Features" and one "Pricing"?
-         
-         Let's assume "Landing Page" = Image 4 style.
-         image_4 has "Choose the right plan for your team". This is definitely a pricing section header.
-         
-         Maybe the user messed up the image numbering or descriptions?
-         "landing page like the fourth photo... also a page for the pricing like in the second photo."
-         
-         If Image 4 is the landing page design, I will follow it.
-         Note: Image 4 seems to focus on "Pricing" in the text.
-         
-         I will make index.html behave like a Landing Page but with that visual style.
-         I'll add a generic "Hero" text instead of "Choose right plan" if it feels wrong, 
-         BUT user instruction "Landing page like the fourth photo" is specific.
-         
-         Actually, let's look at "Third Photo" (Image 2) -> Dashboard.
-         "Fourth Photo" (Image 3 or 4 depending on 0-indexing).
-         
-         Image listing:
-         0: Login
-         1: Pricing
-         2: Dashboard
-         3: Logo
-         4: Landing?
-         
-         Ah, if there are 5 images (0-4).
-         uploaded_image_4 is the "Last" one? No, 4 is the last index.
-         
-         Let's assume:
-         Image 4 is the one with "Build faster, together" headline?
-         That would make more sense for a Landing Page.
-         
-         Let's check the request text carefully: "like the fourth photo".
-         
-         I will implement a standard Landing Page layout structure for index.html using the aesthetic of the provided "Landing" image (likely the one with 'Build faster' or generic hero).
-         
-         I will assume Image 4 is the "Build faster, together" one.
-         If Image 4 is the "Pricing" one, then I will follow that.
-         
-         To be safe, I'll assume standard Hero section:
-         H1: Build faster, together.
-         Sub: Real-time collaboration...
-    -->
+    <!-- hero -->
 
     <main class="landing-main">
       <section class="hero-section">
@@ -144,12 +71,12 @@
           </div>
 
           <div class="hero-visual">
-            <!-- Placeholder for the big UI screenshot -->
+            <!-- ui screenshot -->
             <div
               class="glass-panel visual-mockup"
               style="height: 400px; margin-top: 3rem; position: relative"
             >
-              <!-- Abstract UI elements -->
+              <!-- abstract ui -->
               <div
                 style="
                   position: absolute;
@@ -166,7 +93,7 @@
         </div>
       </section>
 
-      <!-- Trusted By -->
+      <!-- trusted logos -->
       <section class="logos-section">
         <div class="container text-center">
           <p class="text-sm text-muted">TRUSTED BY FORWARD-THINKING TEAMS AT</p>
@@ -180,7 +107,7 @@
         </div>
       </section>
 
-      <!-- Features Grid -->
+      <!-- features -->
       <section class="features-section container">
         <div class="section-header text-center">
           <h2>Everything you need to scale</h2>
@@ -223,9 +150,9 @@
       </div>
     </footer>
 
-    <!-- Terms Modal -->
+    <!-- terms modal -->
     <dialog id="terms-modal" class="terms-modal">
-      <!-- Header -->
+      <!-- header -->
       <div class="terms-header">
         <div>
           <span class="terms-header-overline">LEGAL FRAMEWORK</span>
@@ -236,7 +163,7 @@
         </button>
       </div>
 
-      <!-- Body Content -->
+      <!-- body -->
       <div class="terms-body">
         <div>
           <div class="terms-section-heading">
@@ -271,7 +198,7 @@
         </div>
       </div>
 
-      <!-- Footer (Sticky) -->
+      <!-- sticky footer -->
       <div class="terms-footer">
         <span class="terms-footer-date">LAST UPDATED: OCT 24, 2026</span>
         <div class="terms-footer-actions">

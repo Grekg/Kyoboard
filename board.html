@@ -16,9 +16,9 @@
     />
   </head>
   <body>
-    <!-- Top Bar -->
+    <!-- top bar -->
     <header id="top-bar">
-      <!-- Left: Logo & Branding -->
+      <!-- logo -->
       <div class="top-left">
         <a href="index.html" class="brand-link">
           <img
@@ -42,7 +42,7 @@
         </div>
       </div>
 
-      <!-- Right: Controls -->
+      <!-- controls -->
       <div class="top-right">
         <button id="btn-share" class="btn-primary">Share</button>
 
@@ -73,7 +73,7 @@
     </header>
 
     <div id="app">
-      <!-- Left Toolbar -->
+      <!-- tools -->
       <div id="toolbar-left">
         <button
           id="select"
@@ -96,9 +96,8 @@
           <span class="material-icons-outlined">edit</span>
         </button>
 
-        <!-- Pen/Color Menu (Floating next to tool) -->
+        <!-- pen menu -->
         <div id="pen-menu" class="tool-flyout hidden">
-          <!-- Reuse existing color picker structure -->
           <div class="color-picker">
             <div
               class="color-swatch active"
@@ -266,14 +265,14 @@
         </button>
       </div>
 
-      <!-- Main Board Area -->
+      <!-- board -->
       <div id="board-wrap">
         <div id="viewport">
           <canvas id="board"></canvas>
           <div id="files-layer"></div>
         </div>
 
-        <!-- Bottom Center Toolbar (Zoom/Export) -->
+        <!-- bottom bar -->
         <div id="bottom-bar">
           <button id="zoom-out" class="icon-btn-small">
             <span class="material-icons-outlined">remove</span>
@@ -297,9 +296,9 @@
         </div>
       </div>
 
-      <!-- Right Sidebar (Fixed) -->
+      <!-- sidebar -->
       <aside id="sidebar-right">
-        <!-- Shared Notes Section -->
+        <!-- notes -->
         <div class="sidebar-section active">
           <div class="section-title">
             <span class="material-icons-outlined" style="color: #2563eb"
@@ -331,10 +330,9 @@
           ></textarea>
         </div>
 
-        <!-- Divider -->
         <div class="sidebar-divider"></div>
 
-        <!-- Chat Section -->
+        <!-- chat -->
         <div class="sidebar-section chat-section">
           <div class="section-title">
             <span class="material-icons-outlined" style="color: #2563eb"
@@ -346,7 +344,6 @@
           </div>
 
           <div id="messages">
-            <!-- Messages will appear here -->
           </div>
 
           <div id="chat-input-area">
@@ -362,25 +359,24 @@
       </aside>
     </div>
 
-    <!-- Hidden compatibility inputs for board.js -->
+    <!-- hidden inputs -->
     <input id="color" type="hidden" value="#000000" />
     <input id="username" type="hidden" value="" />
 
-    <!-- Socket.io Client -->
+    <!-- socket io -->
     <script src="https://cdn.socket.io/4.7.4/socket.io.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
     <script src="js/config.js"></script>
     <script src="js/board.js"></script>
     <script>
-      // Inline script to handle simple UI toggles for the redesign demo
+      // simple toggles
       document
         .getElementById("dark-mode-toggle")
         .addEventListener("click", () => {
           document.body.classList.toggle("dark-mode");
         });
 
-      // Ensure new Select tool works with existing logic if possible,
-      // or just rely on 'pen' being default for now.
+      // pen default fallback
     </script>
   </body>
 </html>

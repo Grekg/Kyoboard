@@ -1,15 +1,13 @@
 const { verifyToken } = require("../utils/jwt");
 const prisma = require("../config/db");
 
-/**
- * Express middleware to authenticate requests via JWT cookie
- */
+// auth middleware
 async function authMiddleware(req, res, next) {
   try {
-    // Get token from cookie OR Authorization header
+    // grab token
     let token = req.cookies?.token;
 
-    // Check Authorization header if no cookie
+    // fallback header
     if (!token) {
       const authHeader = req.headers.authorization;
       if (authHeader && authHeader.startsWith("Bearer ")) {
@@ -21,13 +19,12 @@ async function authMiddleware(req, res, next) {
       return res.status(401).json({ error: "Authentication required" });
     }
 
-    // Verify token
     const decoded = verifyToken(token);
     if (!decoded) {
       return res.status(401).json({ error: "Invalid or expired token" });
     }
 
-    // Fetch user from database
+    // get user
     const user = await prisma.user.findUnique({
       where: { id: decoded.userId },
       select: {
@@ -43,7 +40,6 @@ async function authMiddleware(req, res, next) {
       return res.status(401).json({ error: "User not found" });
     }
 
-    // Attach user to request
     req.user = user;
     next();
   } catch (error) {
@@ -52,9 +48,7 @@ async function authMiddleware(req, res, next) {
   }
 }
 
-/**
- * Optional auth - attaches user if token present, but doesn't require it
- */
+// optional auth
 async function optionalAuthMiddleware(req, res, next) {
   try {
     const token = req.cookies?.token;

@@ -1,6 +1,4 @@
-/* Product Page Specific Styles */
-
-/* Hero */
+/* hero */
 .hero-title {
   font-size: 3.5rem;
   font-weight: 700;
@@ -16,12 +14,12 @@
   line-height: 1.6;
 }
 
-/* Product Features */
+/* features */
 .product-features-section {
   position: relative;
 }
 
-/* Enhancing standard feature-card for product page */
+/* tweak card */
 .product-card {
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 }
@@ -42,8 +40,7 @@
   line-height: 1.6;
 }
 
-/* Semantic Product Layout Components (Vanilla CSS from Tailwind) */
-
+/* layout comps */
 .product-main {
     flex-grow: 1;
     padding-top: calc(64px + 2rem);
@@ -83,7 +80,7 @@
 .bracket-pos-bottom-left { bottom: 4rem; left: 4rem; }
 .bracket-pos-bottom-right { bottom: 4rem; right: 4rem; }
 
-/* 1. Hero Section */
+/* hero */
 .product-hero {
     min-height: 819px;
     display: flex;
@@ -139,7 +136,7 @@
     margin-bottom: 4rem;
 }
 
-/* 2. Feature Section */
+/* feature deep dive */
 .feature-section {
     margin-bottom: 4rem;
     position: relative;
@@ -260,7 +257,7 @@
 }
 .feature-avatar-text-tertiary { font-size: 0.75rem; color: #902e00; }
 
-/* 3. Bento Grid Organization Section */
+/* bento grid */
 .bento-section {
     margin-bottom: 4rem;
 }
@@ -408,7 +405,7 @@
     color: #d1d5db;
 }
 
-/* 4. CTA Section */
+/* cta */
 .cta-section {
     padding-top: 4rem;
     padding-bottom: 4rem;
@@ -520,7 +517,7 @@
     align-items: center;
 }
 
-/* Mobile Responsive */
+/* mobile */
 @media (max-width: 768px) {
   .feature-grid, .bento-grid {
     grid-template-columns: 1fr;

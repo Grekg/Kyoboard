@@ -1,10 +1,7 @@
 const prisma = require("../config/db");
 const { hashPassword, comparePassword } = require("../utils/password");
 
-/**
- * GET /api/users/me
- * Get current user profile
- */
+// get profile
 async function getProfile(req, res) {
   try {
     const user = await prisma.user.findUnique({
@@ -35,22 +32,19 @@ async function getProfile(req, res) {
   }
 }
 
-/**
- * PUT /api/users/me
- * Update current user profile (including password change)
- */
+// update profile
 async function updateProfile(req, res) {
   try {
     const { username, email, avatarUrl, currentPassword, newPassword } =
       req.body;
 
-    // Build update data
+    // build update
     const updateData = {};
     if (username !== undefined) updateData.username = username;
     if (email !== undefined) updateData.email = email;
     if (avatarUrl !== undefined) updateData.avatarUrl = avatarUrl;
 
-    // Handle password change
+    // update password
     if (newPassword) {
       if (!currentPassword) {
         return res
@@ -58,7 +52,7 @@ async function updateProfile(req, res) {
           .json({ error: "Current password is required to change password" });
       }
 
-      // Verify current password
+      // verify current pass
       const user = await prisma.user.findUnique({
         where: { id: req.user.id },
         select: { passwordHash: true },
@@ -78,7 +72,7 @@ async function updateProfile(req, res) {
       updateData.passwordHash = await hashPassword(newPassword);
     }
 
-    // Check for conflicts
+    // check conflicts
     if (username || email) {
       const conflict = await prisma.user.findFirst({
         where: {

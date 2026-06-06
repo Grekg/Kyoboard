@@ -2,7 +2,7 @@ const passport = require("passport");
 const GoogleStrategy = require("passport-google-oauth20").Strategy;
 const prisma = require("../config/db");
 
-// Determine Callback URL
+// get callback
 const CALLBACK_URL =
   process.env.GOOGLE_CALLBACK_URL ||
   (process.env.NODE_ENV === "production"
@@ -26,7 +26,7 @@ passport.use(
         const avatarUrl =
           profile.photos && profile.photos[0] ? profile.photos[0].value : null;
 
-        // Check if user exists by Google ID or Email
+        // find user
         let user = await prisma.user.findFirst({
           where: {
             OR: [{ googleId }, { email }],
@@ -34,10 +34,9 @@ passport.use(
         });
 
         if (!user) {
-          // Create new user
           let username = displayName.replace(/\s+/g, "").toLowerCase();
 
-          // Ensure username uniqueness
+          // make username unique
           let uniqueUsername = username;
           let counter = 1;
           while (
@@ -55,11 +54,11 @@ passport.use(
               email,
               googleId,
               avatarUrl,
-              passwordHash: null, // No password for OAuth users
+              passwordHash: null, // skip password
             },
           });
         } else if (!user.googleId) {
-          // Link Google account to existing email user
+          // link google
           user = await prisma.user.update({
             where: { id: user.id },
             data: { googleId, avatarUrl: user.avatarUrl || avatarUrl },

@@ -1,8 +1,8 @@
 (() => {
-  // client-side realtime whiteboard script
+  // client whiteboard
   const clientId = Math.random().toString(36).slice(2, 9);
 
-  // elements
+  // dom elements
   const viewport = document.getElementById("viewport");
   const canvas = document.getElementById("board");
   const filesLayer = document.getElementById("files-layer");
@@ -10,7 +10,7 @@
   const sizeEl = document.getElementById("size");
   const usernameEl = document.getElementById("username");
 
-  // Toolbar Buttons
+  // toolbar btns
   const penBtn = document.getElementById("pen");
   const eraserBtn = document.getElementById("eraser");
   const clearBtn = document.getElementById("clear");
@@ -20,7 +20,7 @@
   const addTextBtn = document.getElementById("add-text");
   const panBtn = document.getElementById("pan-tool");
 
-  // Menus & Pickers
+  // menus
   const penMenu = document.getElementById("pen-menu");
   const eraserMenu = document.getElementById("eraser-menu");
   const penSizeSlider = document.getElementById("pen-size-slider");
@@ -30,28 +30,28 @@
   );
   const customColorPicker = document.getElementById("custom-color-picker");
 
-  // Top Bar Buttons
+  // top bar
   const shareBtn = document.getElementById("btn-share");
   const settingsBtn = document.getElementById("btn-settings");
   const notifBtn = document.getElementById("btn-notifications");
   const boardNameInput = document.getElementById("board-name-input");
 
-  // Zoom
+  // zoom
   const zoomInBtn = document.getElementById("zoom-in");
   const zoomOutBtn = document.getElementById("zoom-out");
   const zoomVal = document.getElementById("zoom-val");
 
-  // Chat elements (Socket.IO)
+  // chat
   const chatForm = document.getElementById("chat-form");
   const chatInput = document.getElementById("chat-input");
   const messagesEl = document.getElementById("messages");
 
-  // Sidebar Tabs
+  // tabs
   const tabBtns = document.querySelectorAll(".tab-btn");
   const notesPanel = document.getElementById("notes-panel");
   const chatPanel = document.getElementById("chat-panel");
 
-  // Viewport State (Pan/Zoom)
+  // viewport state
   let scale = 1;
   let panX = 0;
   let panY = 0;
@@ -69,11 +69,7 @@
 
   function resize() {
     const rect = document.getElementById("board-wrap").getBoundingClientRect();
-    // Canvas should be large enough. For now, let's keep it fixed large or match screen
-    // but typically infinite canvas dynamically resizes.
-    // Simple approach: Keep canvas size 2000x2000 and center it?
-    // Or just match viewport.
-    // Let's match window size for now, but valid for infinite canvas you'd want tiling.
+    // temp match window size
     canvas.width = rect.width;
     canvas.height = rect.height;
   }
@@ -89,12 +85,12 @@
     if (ws && ws.readyState === WebSocket.OPEN) ws.send(JSON.stringify(msg));
   }
 
-  // WebSocket connection
+  // ws connect
   const wsProto = location.protocol === "https:" ? "wss" : "ws";
   const wsHost = `${location.hostname}:3000`;
   const ws = new WebSocket(`${wsProto}://${wsHost}`);
 
-  // Socket.IO client
+  // socket io
   let sio;
   try {
     if (typeof io !== "undefined") {
@@ -103,7 +99,7 @@
         sio.emit("join", usernameEl.value || "Guest");
       });
 
-      // display incoming chat messages
+      // show chat msgs
       sio.on("chat message", (payload) => {
         if (!messagesEl) return;
         const div = document.createElement("div");
@@ -138,7 +134,7 @@
   ws.addEventListener("message", (ev) => {
     try {
       const msg = JSON.parse(ev.data);
-      if (msg.clientId === clientId) return; // ignore own messages
+      if (msg.clientId === clientId) return; 
       handleRemote(msg);
     } catch (e) {
       console.warn("invalid ws message", e);
@@ -165,7 +161,7 @@
     }
   }
 
-  // Live Cursors
+  // cursors
   const cursors = {};
   function updateCursor(msg) {
     if (!cursors[msg.clientId]) {
@@ -181,39 +177,32 @@
               msg.color || "#2563EB"
             }">${msg.name}</div>
           `;
-      // Cursors live in viewport so they move with pan/zoom?
-      // Usually cursors are screen space or world space?
-      // If they share X/Y (0-1), it's board relative. So they should assume board is 100%.
-      // But our board is screen size?
-      // For now let's put them in filesLayer or similar so they transform with viewport.
       filesLayer.appendChild(cursor);
       cursors[msg.clientId] = cursor;
     }
 
     const el = cursors[msg.clientId];
-    // Map 0-1 to canvas size
+    // map to canvas
     el.style.left = msg.x * canvas.width + "px";
     el.style.top = msg.y * canvas.height + "px";
     el.style.position = "absolute";
-    el.style.transform = "none"; // reset previous logic
+    el.style.transform = "none"; 
   }
 
-  // Broadcast my cursor
+  // broadcast cursor
   const boardWrap = document.getElementById("board-wrap");
   let lastCursorTime = 0;
   boardWrap.addEventListener("pointermove", (e) => {
     const now = Date.now();
-    if (now - lastCursorTime < 50) return; // Throttle 50ms
+    if (now - lastCursorTime < 50) return; // throttle
     lastCursorTime = now;
 
-    // We need to inverse transform the mouse event to get world coordinates
-    // (clientX - panX) / scale
+    // get world coords
     const rect = boardWrap.getBoundingClientRect();
-    // Relative to boardWrap (which is screen fixed essentially)
     const clientX = e.clientX - rect.left;
     const clientY = e.clientY - rect.top;
 
-    // World space
+    // world space
     const worldX = (clientX - panX) / scale;
     const worldY = (clientY - panY) / scale;
 
@@ -256,9 +245,9 @@
     ctx.restore();
   }
 
-  // local drawing handlers
+  // local drawing
   function posFromEvent(e) {
-    // Inverse transform logic as above
+    // invert transform
     const rect = boardWrap.getBoundingClientRect();
     const clientX = e.touches ? e.touches[0].clientX : e.clientX;
     const clientY = e.touches ? e.touches[0].clientY : e.clientY;
@@ -266,7 +255,7 @@
     const relX = clientX - rect.left;
     const relY = clientY - rect.top;
 
-    // To logic space (0-1)
+    // to 0-1 logic space
     const worldX = (relX - panX) / scale;
     const worldY = (relY - panY) / scale;
 
@@ -276,9 +265,9 @@
     };
   }
 
-  // Pointer Events on Board Wrapper (captures all)
+  // pointer events
   boardWrap.addEventListener("pointerdown", (e) => {
-    // Check if clicking on tool/ui
+    // ui click check
     if (
       e.target.closest(".btn-tool") ||
       e.target.closest("#sidebar") ||
@@ -287,10 +276,6 @@
       e.target.closest("#top-bar")
     )
       return;
-
-    // If clicking on element (and not pan tool), let element handle it (managed by makeDraggable)
-    // BUT if we are in drawing mode, we might want to draw over elements?
-    // Current design: elements layer is above canvas. So if you click an element, it blocks canvas.
 
     if (tool === "pan") {
       isPanning = true;
@@ -301,12 +286,12 @@
       return;
     }
 
-    // If dragging an element, don't draw
+    // skip if dragging
     if (e.target.closest(".element-item")) return;
 
     drawing = true;
     last = posFromEvent(e);
-    e.preventDefault(); // prevent scrolling on touch
+    e.preventDefault(); // prevent scroll
   });
 
   window.addEventListener("pointerup", (e) => {
@@ -352,7 +337,7 @@
     last = p;
   });
 
-  // Tool Switching
+  // switch tools
   function setActiveTool(t, btn) {
     if (tool === t && btn.classList.contains("active")) {
       if (t === "pen") penMenu.classList.toggle("hidden");
@@ -375,12 +360,11 @@
   eraserBtn.addEventListener("click", () => setActiveTool("eraser", eraserBtn));
   panBtn.addEventListener("click", () => setActiveTool("pan", panBtn));
 
-  // Custom Color Logic
+  // custom colors
   customColorPicker.addEventListener("input", (e) => {
     currentColor = e.target.value;
-    // Deselect other swatches
+    // deselect others
     colorSwatches.forEach((s) => s.classList.remove("active"));
-    // Maybe style the label?
     const label = document.querySelector(".custom-color-label");
     label.style.background = currentColor;
     label.classList.add("active");
@@ -389,7 +373,7 @@
   colorSwatches.forEach((swatch) => {
     swatch.addEventListener("click", () => {
       colorSwatches.forEach((s) => s.classList.remove("active"));
-      // also deselect custom
+      // clear custom
       document.querySelector(".custom-color-label").classList.remove("active");
 
       swatch.classList.add("active");
@@ -406,7 +390,7 @@
     (e) => (currentEraserSize = parseInt(e.target.value, 10)),
   );
 
-  // Zoom Logic
+  // zoom
   zoomInBtn.addEventListener("click", () => {
     scale += 0.1;
     updateViewport();
@@ -429,17 +413,16 @@
       alert("Sharing functionality coming soon!"),
     );
 
-  // Element Creation
+  // create elements
   function addElement(type, args) {
     const id = Math.random().toString(36).slice(2, 9);
-    // Spawn in center of screen (taking into account pan/zoom inverse)
-    // Center of screen relative to boardWrap
+    // spawn center
     const rect = boardWrap.getBoundingClientRect();
     const centerX = rect.width / 2;
     const centerY = rect.height / 2;
 
     const worldX = (centerX - panX) / scale;
-    const worldY = (centerY - panY) / scale; /* basic logic */
+    const worldY = (centerY - panY) / scale; 
 
     const msg = {
       type: "element",
@@ -475,7 +458,7 @@
     reader.readAsDataURL(f);
   });
 
-  // Insert Element with Handles
+  // insert element
   function insertElement(msg) {
     if (msg.id && document.querySelector(`.element-item[data-id="${msg.id}"]`))
       return;
@@ -496,12 +479,12 @@
     wrap.style.top = (msg.top || 40) + "px";
     wrap.style.position = "absolute";
 
-    // Drag Handle
+    // drag handle
     const dragHandle = document.createElement("div");
     dragHandle.className = "drag-handle";
     wrap.appendChild(dragHandle);
 
-    // Content stuff
+    // content
     if (msg.kind === "image") {
       const img = document.createElement("img");
       if (msg.data) img.src = msg.data;
@@ -533,13 +516,9 @@
       const header = document.createElement("div");
       header.className = "card-header";
       header.innerHTML = `<span>${msg.title || "Title"}</span>`;
-      // header can be drag handle
+      // header as handle
       header.style.cursor = "grab";
-
-      // Remove separate drag handle for card if utilizing header?
-      // Or keep unified consistency. Let's keep separate drag handle at top for consistency, or put title inside it.
-      // Actually for Card, the header IS usually the drag handle.
-      dragHandle.style.display = "none"; // hide generic one
+      dragHandle.style.display = "none"; // hide generic
       header.classList.add("custom-drag-handle");
 
       wrap.appendChild(header);
@@ -560,7 +539,7 @@
       });
     }
 
-    // Resize Handle (bottom right)
+    // resize handle
     const resize = document.createElement("div");
     resize.className = "resize-handle";
     resize.style.position = "absolute";
@@ -569,14 +548,14 @@
     resize.style.width = "16px";
     resize.style.height = "16px";
     resize.style.cursor = "nwse-resize";
-    resize.style.background = "rgba(0,0,0,0.2)"; // Visible handle
+    resize.style.background = "rgba(0,0,0,0.2)"; 
     resize.style.zIndex = "20";
     wrap.appendChild(resize);
 
-    // logic
+    // setup interactions
     makeDraggableResizable(wrap, dragHandle, resize);
 
-    // For card, header is trigger too
+    // card header trigger
     if (msg.kind === "card") {
       const header = wrap.querySelector(".card-header");
       makeDraggableResizable(wrap, header, resize);
@@ -616,7 +595,7 @@
     function onDown(e) {
       if (e.button !== 0) return;
 
-      // Resize Logic
+      // handle resize
       if (e.target === resizeTrigger) {
         e.preventDefault();
         e.stopPropagation();
@@ -624,7 +603,7 @@
         resizeTrigger.setPointerCapture(e.pointerId);
         startX = e.clientX;
 
-        // Current Width (unscaled CSS pixels)
+        // start width
         startW = parseFloat(el.style.width) || el.offsetWidth;
 
         window.addEventListener("pointermove", onMove);
@@ -632,8 +611,7 @@
         return;
       }
 
-      // Drag Logic
-      // Allow dragging if clicking dragTrigger OR if it's a card header
+      // handle drag
       if (
         e.target === dragTrigger ||
         e.target.closest(".drag-handle") ||
@@ -647,7 +625,7 @@
         startX = e.clientX;
         startY = e.clientY;
 
-        // Current Position
+        // start pos
         startLeft = parseFloat(el.style.left) || 0;
         startTop = parseFloat(el.style.top) || 0;
 
@@ -658,10 +636,10 @@
 
     function onMove(e) {
       if (dragging) {
-        // Delta in screen pixels
+        // screen delta
         const dxScreen = e.clientX - startX;
         const dyScreen = e.clientY - startY;
-        // Convert to world pixels (divide by scale)
+        // world delta
         const dxWorld = dxScreen / scale;
         const dyWorld = dyScreen / scale;
 
@@ -705,7 +683,7 @@
           width: parseFloat(el.style.width),
         });
       }
-      // Clean up window listeners
+      // cleanup
       window.removeEventListener("pointermove", onMove);
       window.removeEventListener("pointerup", onUp);
     }
@@ -714,7 +692,7 @@
     if (resizeTrigger) resizeTrigger.addEventListener("pointerdown", onDown);
   }
 
-  // Tab Switching
+  // tabs
   tabBtns.forEach((btn) => {
     btn.addEventListener("click", () => {
       tabBtns.forEach((b) => b.classList.remove("active"));

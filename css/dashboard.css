@@ -1,28 +1,7 @@
-/* Dashboard CSS */
-
 body {
-  background-color: #f3f4f6; /* Light gray background suggested by image? 
-    Wait, Image 0 & 4 are dark. Image 2 (Dashboard) looks LIGHT mode in the screenshot provided?
-    Let's check `uploaded_image_2`.
-    It has a white sidebar, light gray background.
-    The other pages are dark mode.
-    The user said: "The web app is a real time collaboration whiteboard for enterprices. The photos i have attached are the design i wanna follow... make a landing page like the fourth photo, a login page like the first photo..."
-    
-    If the dashboard photo is Light Mode, I should probably make the Dashboard Light Mode to match the photo?
-    "Also i want you to make a simple dashboard like in the last photo."
-    
-    If I make the Landing/Login Dark and Dashboard Light, it might feel inconsistent, BUT I must follow the photos.
-    Photo 2 IS Light Mode.
-    
-    I will implement Light Mode for Dashboard specifically, or a very light gray theme.
-    */
-  color: #1f2937; /* Dark text for light mode */
-}
+  background-color: #f3f4f6; 
+  color: #1f2937; 
 
-/* Override Global Dark Theme Vars for Dashboard Context locally if needed, 
-   OR just explicitly style Dashboard elements to be light.
-   I'll reset the body bg for dashboard page specifically via dashboard.css 
-*/
 body {
   background-color: #f9fafb;
 }
@@ -33,7 +12,7 @@ body {
   overflow: hidden;
 }
 
-/* Sidebar */
+/* sidebar */
 .sidebar {
   width: 250px;
   background: white;
@@ -118,7 +97,7 @@ body {
   color: #6b7280;
 }
 
-/* Main Content */
+/* main */
 .main-content {
   flex: 1;
   display: flex;
@@ -186,7 +165,7 @@ body {
   font-weight: 600;
 }
 
-/* Content Area */
+/* content */
 .content-area {
   padding: 2rem;
 }
@@ -214,7 +193,6 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  /* background: white; */
   border-radius: var(--radius-md);
   margin-bottom: 2rem;
 }
@@ -257,7 +235,7 @@ body {
   margin-top: 2rem;
 }
 
-/* Modal Styles */
+/* modals */
 .modal-overlay {
   position: fixed;
   top: 0;
@@ -369,7 +347,7 @@ body {
   background: #b91c1c;
 }
 
-/* Board Card Styles */
+/* board cards */
 .board-card {
   position: relative;
 }
@@ -409,7 +387,7 @@ body {
   color: #dc2626;
 }
 
-/* Recent boards grid */
+/* recent boards */
 .recent-boards-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -422,7 +400,7 @@ body {
   text-align: center;
 }
 
-/* === Mobile Responsive === */
+/* mobile */
 @media (max-width: 768px) {
   .sidebar {
     display: none;
@@ -448,4 +426,5 @@ body {
     width: 95%;
     padding: 1.5rem;
   }
+}
 }

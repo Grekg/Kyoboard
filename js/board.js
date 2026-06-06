@@ -4,7 +4,7 @@
   const SOCKET_URL =
     window.KYOBOARD_CONFIG?.SOCKET_URL || "http://localhost:3000";
 
-  // Get board ID from URL
+  // grab board id
   const urlParams = new URLSearchParams(window.location.search);
   const boardId = urlParams.get("id");
 
@@ -14,15 +14,15 @@
     return;
   }
 
-  // Client identification
+  // client id
   const clientId = Math.random().toString(36).slice(2, 9);
 
-  // User state
+  // state
   let currentUser = null;
   let socket = null;
   let activeUsersCount = 1;
 
-  // DOM Elements
+  // dom elements
   const viewport = document.getElementById("viewport");
   const canvas = document.getElementById("board");
   const filesLayer = document.getElementById("files-layer");
@@ -30,7 +30,7 @@
   const boardNameInput = document.querySelector(".meta-title");
   const userProfileImg = document.querySelector(".user-profile img");
 
-  // Toolbar buttons
+  // toolbar
   const penBtn = document.getElementById("pen");
   const eraserBtn = document.getElementById("eraser");
   const clearBtn = document.getElementById("clear");
@@ -41,7 +41,7 @@
   const panBtn = document.getElementById("pan-tool");
   const selectBtn = document.getElementById("select");
 
-  // Menus & Pickers
+  // menus
   const penMenu = document.getElementById("pen-menu");
   const eraserMenu = document.getElementById("eraser-menu");
   const textMenu = document.getElementById("text-menu");
@@ -53,25 +53,25 @@
   );
   const customColorPicker = document.getElementById("custom-color-picker");
 
-  // Zoom
+  // zoom
   const zoomInBtn = document.getElementById("zoom-in");
   const zoomOutBtn = document.getElementById("zoom-out");
   const zoomVal = document.getElementById("zoom-val");
 
-  // Chat elements
+  // chat
   const chatInput = document.getElementById("chat-input");
   const sendMsgBtn = document.getElementById("send-msg");
   const messagesEl = document.getElementById("messages");
 
-  // Shared notes
+  // shared notes
   const sharedNotesArea = document.getElementById("shared-notes-area");
 
-  // Viewport state
+  // viewport state
   let scale = 1;
   let panX = 0;
   let panY = 0;
 
-  // Drawing state
+  // drawing state
   const ctx = canvas.getContext("2d");
   let currentColor = "#000000";
   let currentSize = 3;
@@ -82,14 +82,14 @@
   let isPanning = false;
   let lastPan = { x: 0, y: 0 };
 
-  // Virtual canvas size
+  // canvas size
   const VIRTUAL_W = 4000;
   const VIRTUAL_H = 4000;
 
-  // Live cursors
+  // live cursors
   const cursors = {};
 
-  // Helper to get auth headers
+  // get auth headers
   function getAuthHeaders() {
     const token = localStorage.getItem("kyoboard_token");
     const headers = { "Content-Type": "application/json" };
@@ -104,11 +104,11 @@
     if (countEl) countEl.textContent = `${activeUsersCount} Active`;
   }
 
-  // Initialize
+  // start
   init();
 
   async function init() {
-    // Check authentication
+    // check auth
     try {
       const token = localStorage.getItem("kyoboard_token");
       if (!token) {
@@ -123,33 +123,33 @@
       const data = await res.json();
       currentUser = data.user;
 
-      // Update UI
+      // update ui
       if (usernameEl) usernameEl.value = currentUser.username;
       if (userProfileImg && currentUser.avatarUrl) {
         userProfileImg.src = currentUser.avatarUrl;
       }
     } catch (error) {
       console.error("Auth error:", error);
-      // Save current URL to redirect back after login
+      // save redirect url
       localStorage.setItem("redirect_after_login", window.location.href);
       window.location.href = "login.html";
       return;
     }
 
-    // Initialize canvas
+    // init canvas
     resize();
     window.addEventListener("resize", resize);
 
-    // Center viewport
+    // center viewport
     const rect = document.getElementById("board-wrap").getBoundingClientRect();
     panX = -(VIRTUAL_W - rect.width) / 2;
     panY = -(VIRTUAL_H - rect.height) / 2;
     updateViewport();
 
-    // Connect to Socket.io
+    // connect socket
     connectSocket();
 
-    // Setup event listeners
+    // setup events
     setupToolbar();
     setupDrawing();
     setupChat();
@@ -225,7 +225,7 @@
       `;
     document.body.appendChild(toast);
 
-    // Trigger animation
+    // anim trigger
     requestAnimationFrame(() => {
       toast.style.opacity = "1";
       toast.style.transform = "translateY(0)";
@@ -252,10 +252,9 @@
       html2canvas(boardWrapEl, { backgroundColor: "#111827", scale: 2, useCORS: true })
         .then((exportCanvas) => {
           if (bottomBar) bottomBar.style.display = "flex";
-          // Export the canvas as PNG
           const dataURL = exportCanvas.toDataURL("image/png");
 
-          // Create a temporary link to trigger download
+          // trigger dl
           const link = document.createElement("a");
           link.download = `kyoboard-export-${Date.now()}.png`;
           link.href = dataURL;
@@ -293,28 +292,28 @@
     socket.on("board-state", (data) => {
       console.log("Received board state:", data);
 
-      // Set board name
+      // set board name
       if (boardNameInput && data.board.name) {
         boardNameInput.value = data.board.name;
       }
 
-      // Load canvas state
+      // load canvas
       if (data.board.canvasState) {
         loadCanvasState(data.board.canvasState);
       }
 
-      // Load shared notes
+      // load notes
       if (sharedNotesArea && data.notes) {
         sharedNotesArea.value = data.notes;
       }
 
-      // Load chat messages
+      // load chat
       if (data.messages) {
         messagesEl.innerHTML = "";
         data.messages.forEach((msg) => appendChatMessage(msg));
       }
 
-      // Show active users
+      // show active users
       if (data.users) {
         console.log("Active users:", data.users);
         activeUsersCount = data.users.length;
@@ -332,7 +331,7 @@
     socket.on("user-left", (data) => {
       console.log("User left:", data.username);
       appendSystemMessage(`${data.username} left the board`);
-      // Remove their cursor
+      // rm cursor
       if (cursors[data.odId]) {
         cursors[data.odId].remove();
         delete cursors[data.odId];
@@ -397,18 +396,18 @@
   }
 
   function loadCanvasState(state) {
-    // Clear canvas
+    // clear canvas
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     filesLayer.innerHTML = "";
 
-    // Redraw strokes
+    // redraw strokes
     if (state.strokes) {
       state.strokes.forEach((stroke) => {
         drawSegment(stroke, false);
       });
     }
 
-    // Recreate elements
+    // recreate elements
     if (state.elements) {
       state.elements.forEach((element) => {
         insertElement(element);
@@ -416,9 +415,7 @@
     }
   }
 
-  // =====================
-  // DRAWING FUNCTIONS
-  // =====================
+  // drawing fns
 
   function drawSegment(data, isLocal = false) {
     const { from, to, color, size, toolType } = data;
@@ -462,9 +459,7 @@
     };
   }
 
-  // =====================
-  // CURSOR FUNCTIONS
-  // =====================
+  // cursor fns
 
   function updateRemoteCursor(data) {
     if (!cursors[data.odId]) {
@@ -495,12 +490,10 @@
     el.style.top = data.y * VIRTUAL_H + "px";
   }
 
-  // =====================
-  // SETUP FUNCTIONS
-  // =====================
+  // setup fns
 
   function setupToolbar() {
-    // Tool switching
+    // tool switcher
     function setActiveTool(t, btn) {
       if (tool === t && btn?.classList.contains("active")) {
         if (t === "pen") penMenu?.classList.toggle("hidden");
@@ -534,7 +527,7 @@
       setActiveTool("select", selectBtn),
     );
 
-    // Color swatches
+    // colors
     colorSwatches.forEach((swatch) => {
       swatch.addEventListener("click", () => {
         colorSwatches.forEach((s) => s.classList.remove("active"));
@@ -564,11 +557,11 @@
       currentEraserSize = parseInt(e.target.value, 10);
     });
 
-    // Zoom
+    // zoom
     zoomInBtn?.addEventListener("click", () => applyZoom(0.1));
     zoomOutBtn?.addEventListener("click", () => applyZoom(-0.1));
 
-    // Clear
+    // clear
     clearBtn?.addEventListener("click", () => {
       if (confirm("Clear the entire board?")) {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -577,7 +570,7 @@
       }
     });
 
-    // Add elements
+    // add elements
     addNoteBtn?.addEventListener("click", () =>
       addElement("sticky", { content: "New Note" }),
     );
@@ -586,7 +579,7 @@
       addElement("text", { content: "Text" }),
     );
 
-    // Shape buttons
+    // shapes
     document.querySelectorAll(".shape-btn")?.forEach((btn) => {
       btn.addEventListener("click", (e) => {
         const shapeType = e.currentTarget.dataset.shape;
@@ -595,7 +588,7 @@
       });
     });
 
-    // File upload
+    // file upload
     fileInput?.addEventListener("change", (e) => {
       const f = e.target.files[0];
       if (!f) return;
@@ -617,10 +610,10 @@
     const boardWrap = document.getElementById("board-wrap");
     let lastCursorTime = 0;
 
-    // Broadcast cursor position
+    // broadcast cursor
     boardWrap.addEventListener("pointermove", (e) => {
       const now = Date.now();
-      if (now - lastCursorTime < 50) return; // Throttle 50ms
+      if (now - lastCursorTime < 50) return; // throttle
       lastCursorTime = now;
 
       const pos = posFromEvent(e);
@@ -633,7 +626,7 @@
       }
     });
 
-    // Pointer down
+    // ptr down
     boardWrap.addEventListener("pointerdown", (e) => {
       if (
         e.target.closest(".btn-tool") ||
@@ -663,7 +656,7 @@
       }
     });
 
-    // Pointer up
+    // ptr up
     window.addEventListener("pointerup", (e) => {
       drawing = false;
       last = null;
@@ -677,7 +670,7 @@
       }
     });
 
-    // Pointer move
+    // ptr move
     window.addEventListener("pointermove", (e) => {
       if (isPanning) {
         const dx = e.clientX - lastPan.x;
@@ -702,7 +695,7 @@
       last = p;
     });
 
-    // Mouse wheel zoom
+    // scroll zoom
     boardWrap.addEventListener(
       "wheel",
       (e) => {
@@ -792,9 +785,7 @@
     });
   }
 
-  // =====================
-  // ELEMENT FUNCTIONS
-  // =====================
+  // element fns
 
   function addElement(type, args) {
     const id = Math.random().toString(36).slice(2, 9);
@@ -841,12 +832,12 @@
     wrap.style.top = (msg.top || 40) + "px";
     wrap.style.position = "absolute";
 
-    // Drag handle
+    // drag handle
     const dragHandle = document.createElement("div");
     dragHandle.className = "drag-handle";
     wrap.appendChild(dragHandle);
 
-    // Content
+    // content
     if (msg.kind === "image") {
       const img = document.createElement("img");
       if (msg.data) img.src = msg.data;
@@ -872,7 +863,7 @@
         wrap.style.width = msg.width ? msg.width + "px" : "250px";
         wrap.style.height = msg.height ? msg.height + "px" : "auto";
         
-        // Push text down by 20px so the absolute .drag-handle doesn't block clicks
+        // fix text overlap
         content.style.marginTop = "20px"; 
         content.style.fontSize = "24px";
         content.style.width = "100%";
@@ -883,7 +874,7 @@
         content.style.whiteSpace = "pre-wrap";
         content.style.cursor = "text";
         
-        // Add visual feedback on hover so the user knows where the boundaries are
+        // hover bounds
         wrap.addEventListener("mouseenter", () => wrap.style.borderColor = "rgba(255, 255, 255, 0.2)");
         wrap.addEventListener("mouseleave", () => wrap.style.borderColor = "transparent");
       }
@@ -926,7 +917,7 @@
       dragHandle.style.zIndex = "10";
     }
 
-    // Resize handle
+    // resize handle
     const resize = document.createElement("div");
     resize.className = "resize-handle";
     resize.style.cssText = `
@@ -1075,9 +1066,7 @@
     if (resizeTrigger) resizeTrigger.addEventListener("pointerdown", onDown);
   }
 
-  // =====================
-  // UTILITY FUNCTIONS
-  // =====================
+  // utils
 
   function escapeHtml(text) {
     const div = document.createElement("div");
@@ -1091,7 +1080,7 @@
     return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
   }
 
-  // Cleanup on page unload
+  // cleanup
   window.addEventListener("beforeunload", () => {
     socket?.emit("leave-board");
   });

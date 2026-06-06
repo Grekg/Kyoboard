@@ -2,7 +2,7 @@
   const API_BASE =
     window.KYOBOARD_CONFIG?.API_BASE || "http://localhost:3000/api";
 
-  // Helper to get auth headers
+  // auth headers
   function getAuthHeaders() {
     const token = localStorage.getItem("kyoboard_token");
     const headers = { "Content-Type": "application/json" };
@@ -12,7 +12,7 @@
     return headers;
   }
 
-  // DOM Elements
+  // dom elements
   const newBoardBtn = document.querySelector(".new-board-btn");
   const createFirstBtn = document.querySelector(".create-first-btn");
   const contentArea = document.querySelector(".content-area");
@@ -22,7 +22,7 @@
   const userAvatar = userProfile?.querySelector(".avatar");
   const searchInput = document.getElementById("search-input");
 
-  // Modal elements
+  // modals
   const settingsModal = document.getElementById("settings-modal");
   const settingsForm = document.getElementById("settings-form");
   const settingsBtn = document.getElementById("settings-btn");
@@ -46,12 +46,12 @@
 
   const logoutBtn = document.getElementById("logout-btn");
 
-  // State
+  // state
   let currentUser = null;
   let allBoards = [];
   let boardToDelete = null;
 
-  // Initialize
+  // init
   checkAuth();
 
   async function checkAuth() {
@@ -69,14 +69,14 @@
       currentUser = user;
       localStorage.setItem("kyoboard_user", JSON.stringify(user));
 
-      // Update UI with user info
+      // update ui
       if (userName) userName.textContent = user.username;
       if (userEmail) userEmail.textContent = user.email;
       if (userAvatar) {
         userAvatar.textContent = user.username.substring(0, 2).toUpperCase();
       }
 
-      // Load boards
+      // load boards
       loadBoards();
     } catch (error) {
       console.error("Auth check failed:", error);
@@ -105,7 +105,7 @@
   function renderBoards(boards) {
     let recentSection = contentArea.querySelector(".recent-boards-grid");
 
-    // Clear existing empty state
+    // rm empty state
     const emptyStates = contentArea.querySelectorAll(".empty-state-container");
     emptyStates.forEach((el) => el.remove());
 
@@ -138,7 +138,7 @@
       return;
     }
 
-    // Render board cards
+    // render cards
     boards.forEach((board) => {
       const card = createBoardCard(board);
       recentSection.appendChild(card);
@@ -179,7 +179,7 @@
       </div>
     `;
 
-    // Hover effects
+    // hover fx
     card.addEventListener("mouseenter", () => {
       card.style.transform = "translateY(-4px)";
       card.style.boxShadow = "0 8px 30px rgba(0, 0, 0, 0.1)";
@@ -189,13 +189,13 @@
       card.style.boxShadow = "";
     });
 
-    // Click to open board
+    // click to open
     card.addEventListener("click", (e) => {
       if (e.target.closest(".board-action-btn")) return;
       window.location.href = `board.html?id=${board.id}`;
     });
 
-    // Delete button
+    // delete btn
     const deleteBtn = card.querySelector(".board-action-btn.delete");
     deleteBtn.addEventListener("click", (e) => {
       e.stopPropagation();
@@ -224,7 +224,7 @@
     }
   }
 
-  // Delete Modal
+  // delete modal
   function showDeleteModal(board) {
     boardToDelete = board;
     deleteModal.style.display = "flex";
@@ -263,7 +263,7 @@
     if (e.target === deleteModal) hideDeleteModal();
   });
 
-  // Settings Modal
+  // settings modal
   function showSettingsModal() {
     if (!currentUser) return;
     settingsUsername.value = currentUser.username || "";
@@ -299,7 +299,7 @@
     const newPassword = settingsNewPassword.value;
     const confirmPassword = settingsConfirmPassword.value;
 
-    // Validation
+    // validate
     if (!username || !email) {
       settingsError.textContent = "Username and email are required";
       settingsError.style.display = "block";
@@ -339,7 +339,7 @@
         throw new Error(data.error || "Failed to update profile");
       }
 
-      // Update local state
+      // update state
       currentUser = data.user;
       localStorage.setItem("kyoboard_user", JSON.stringify(data.user));
 
@@ -360,7 +360,7 @@
     }
   });
 
-  // Logout
+  // logout
   logoutBtn?.addEventListener("click", async (e) => {
     e.preventDefault();
     try {
@@ -377,11 +377,11 @@
     window.location.href = "login.html";
   });
 
-  // New Board buttons
+  // new board btns
   newBoardBtn?.addEventListener("click", createNewBoard);
   createFirstBtn?.addEventListener("click", createNewBoard);
 
-  // Search
+  // search
   searchInput?.addEventListener("input", (e) => {
     const query = e.target.value.toLowerCase().trim();
     if (!query) {
@@ -394,7 +394,7 @@
     renderBoards(filtered);
   });
 
-  // Toast notifications
+  // toasts
   function showToast(message, type = "success") {
     const toast = document.createElement("div");
     toast.style.cssText = `

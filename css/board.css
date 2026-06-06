@@ -1,13 +1,12 @@
-/* CollabBoard Light Theme (Default) */
 
 :root {
   --bg-app: #ffffff;
   --bg-sidebar: #ffffff;
   --bg-panel: #ffffff;
-  --border-color: #e5e7eb; /* Light Gray */
-  --text-main: #1f2937; /* Dark Gray */
+  --border-color: #e5e7eb; 
+  --text-main: #1f2937; 
   --text-muted: #6b7280;
-  --primary: #2563eb; /* Blue */
+  --primary: #2563eb; 
   --primary-bg: #eff6ff;
   --hover-bg: #f3f4f6;
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
@@ -44,7 +43,7 @@ body {
   flex-direction: column;
 }
 
-/* === Top Bar === */
+/* top bar */
 #top-bar {
   height: 60px;
   background: var(--bg-panel);
@@ -93,7 +92,7 @@ body {
   font-size: 0.9rem;
 }
 
-/* Buttons */
+/* btns */
 .btn-primary {
   background: var(--primary);
   color: white;
@@ -167,7 +166,7 @@ body {
   border-radius: 50%;
 }
 
-/* === Layout === */
+/* layout */
 #app {
   display: flex;
   flex: 1;
@@ -175,7 +174,7 @@ body {
   overflow: hidden;
 }
 
-/* Left Toolbar */
+/* left toolbar */
 #toolbar-left {
   position: absolute;
   left: 1rem;
@@ -194,7 +193,7 @@ body {
 .btn-tool {
   width: 40px;
   height: 40px;
-  border: 1px solid transparent; /* Align layout */
+  border: 1px solid transparent;
   background: transparent;
   border-radius: 6px;
   display: flex;
@@ -217,10 +216,10 @@ body {
   margin: 0;
 }
 
-/* Flyout Menus aligned to left toolbar items */
+/* align flyouts */
 .tool-flyout {
   position: absolute;
-  left: 110%; /* To the right of the bar */
+  left: 110%; 
   top: 0;
   background: var(--bg-panel);
   border: 1px solid var(--border-color);
@@ -272,7 +271,7 @@ body {
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
 }
 
-/* === Board Area === */
+/* board */
 #board-wrap {
   flex: 1;
   position: relative;
@@ -298,9 +297,8 @@ body {
   position: absolute;
   top: 0;
   left: 0;
-  pointer-events: none; /* Let clicks pass to files layer if needed? No, canvas needs events for drawing. */
+  pointer-events: none; 
 }
-/* Revert pointer events for board because we need to draw */
 #board {
   pointer-events: auto;
 }
@@ -317,7 +315,7 @@ body {
   pointer-events: auto;
 }
 
-/* Bottom Bar (Zoom) */
+/* zoom bar */
 #bottom-bar {
   position: absolute;
   bottom: 1rem;
@@ -326,11 +324,11 @@ body {
   background: var(--bg-panel);
   border: 1px solid var(--border-color);
   padding: 0.5rem 1rem;
-  border-radius: 99px; /* Pill shape */
+  border-radius: 99px; 
   display: flex;
   align-items: center;
   box-shadow: var(--shadow-md);
-  z-index: 100; /* Increased to ensure visibility */
+  z-index: 100; 
 }
 .btn-secondary-sm {
   background: transparent;
@@ -369,7 +367,7 @@ body {
   color: var(--text-main);
 }
 
-/* === Right Sidebar === */
+/* right sidebar */
 #sidebar-right {
   width: 320px;
   background: var(--bg-sidebar);
@@ -387,7 +385,7 @@ body {
   min-height: 0;
 }
 .chat-section {
-  flex: 1.5; /* Chat bigger than notes */
+  flex: 1.5;
   background: var(--bg-panel);
 }
 
@@ -446,7 +444,7 @@ body {
   width: 100%;
 }
 
-/* Chat Styling */
+/* chat */
 #messages {
   flex: 1;
   overflow-y: auto;
@@ -536,7 +534,7 @@ body {
   cursor: pointer;
 }
 
-/* Element Styles for Board */
+/* elements */
 .note-item {
   background: #fef08a;
   box-shadow: var(--shadow-md);
@@ -567,7 +565,7 @@ body {
   width: 100%;
   flex: 1;
   overflow-y: auto;
-  scrollbar-width: none; /* Firefox */
+  scrollbar-width: none;
   outline: none;
 }
 .note-content::-webkit-scrollbar, .card-body::-webkit-scrollbar { display: none; }
@@ -589,7 +587,7 @@ body {
   background: transparent;
   z-index: 50 !important;
 }
-/* Visual resize handle for clarity */
+/* visible handle */
 .resize-handle::after {
   content: "";
   position: absolute;
@@ -601,13 +599,13 @@ body {
   border-bottom: 2px solid var(--text-muted);
 }
 
-/* Live Cursors - must not block interactions */
+/* cursors */
 .cursor {
   pointer-events: none !important;
   z-index: 100;
 }
 
-/* Element items must be interactive */
+
 .element-item {
   pointer-events: auto;
   position: absolute;
@@ -645,7 +643,7 @@ body {
   z-index: 25;
 }
 
-/* Shape Tool Specifics */
+/* shapes */
 .shape-item {
   width: 100px;
   height: 100px;
@@ -662,7 +660,7 @@ body {
   border: none;
 }
 
-/* Shared notes textarea */
+/* notes area */
 #shared-notes-area {
   width: 100%;
   flex: 1;
@@ -680,7 +678,7 @@ body {
   border-color: var(--primary);
 }
 
-/* === Mobile Responsive === */
+/* mobile */
 @media (max-width: 768px) {
   #top-bar {
     padding: 0 0.5rem;
@@ -696,7 +694,7 @@ body {
     max-width: 120px;
   }
 
-  /* Make left toolbar horizontal at bottom */
+  /* bottom toolbar */
   #toolbar-left {
     top: auto;
     bottom: 80px;
@@ -713,12 +711,12 @@ body {
   .tool-flyout {
     left: 50%;
     top: auto;
-    bottom: 120%; /* Show above toolbar */
+    bottom: 120%;
     transform: translateX(-50%);
   }
 
-  /* Hide sidebar by default on mobile */
+  /* hide sidebar */
   #sidebar-right {
-    display: none; /* Logic to toggle would be needed for full chat support on mobile */
+    display: none;
   }
 }

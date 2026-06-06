@@ -1,4 +1,4 @@
-// Pricing JS
+// pricing js
 
 const toggle = document.getElementById("billingToggle");
 const amounts = document.querySelectorAll(".amount");
@@ -15,9 +15,7 @@ toggle.addEventListener("click", () => {
   isYearly = !isYearly;
   toggle.classList.toggle("active");
 
-  // Update visuals logic if needed for labels
-
-  // Update prices
+  // update prices
   const source = isYearly ? prices.yearly : prices.monthly;
 
   amounts.forEach((el, index) => {

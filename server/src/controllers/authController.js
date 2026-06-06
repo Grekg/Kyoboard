@@ -2,15 +2,11 @@ const prisma = require("../config/db");
 const { hashPassword, comparePassword } = require("../utils/password");
 const { generateToken, cookieOptions } = require("../utils/jwt");
 
-/**
- * POST /api/auth/signup
- * Create a new user account
- */
+// create user
 async function signup(req, res) {
   try {
     const { username, email, password } = req.body;
 
-    // Validation
     if (!username || !email || !password) {
       return res
         .status(400)
@@ -23,7 +19,7 @@ async function signup(req, res) {
         .json({ error: "Password must be at least 6 characters" });
     }
 
-    // Check if user exists
+    // check existing
     const existingUser = await prisma.user.findFirst({
       where: {
         OR: [{ email }, { username }],
@@ -37,10 +33,10 @@ async function signup(req, res) {
       return res.status(400).json({ error: "Username already taken" });
     }
 
-    // Hash password
+    // hash pass
     const passwordHash = await hashPassword(password);
 
-    // Create user
+    // save user
     const user = await prisma.user.create({
       data: {
         username,
@@ -56,7 +52,7 @@ async function signup(req, res) {
       },
     });
 
-    // Generate token and set cookie
+    // set auth cookie
     const token = generateToken({ userId: user.id, email: user.email });
     res.cookie("token", token, cookieOptions);
 
@@ -71,20 +67,16 @@ async function signup(req, res) {
   }
 }
 
-/**
- * POST /api/auth/login
- * Authenticate user and return JWT in cookie
- */
+// login
 async function login(req, res) {
   try {
     const { email, password } = req.body;
 
-    // Validation
     if (!email || !password) {
       return res.status(400).json({ error: "Email and password are required" });
     }
 
-    // Find user
+    // get user
     const user = await prisma.user.findUnique({
       where: { email },
     });
@@ -93,13 +85,13 @@ async function login(req, res) {
       return res.status(401).json({ error: "Invalid email or password" });
     }
 
-    // Verify password
+    // check pass
     const isValid = await comparePassword(password, user.passwordHash);
     if (!isValid) {
       return res.status(401).json({ error: "Invalid email or password" });
     }
 
-    // Generate token and set cookie
+    // set auth cookie
     const token = generateToken({ userId: user.id, email: user.email });
     res.cookie("token", token, cookieOptions);
 
@@ -119,27 +111,18 @@ async function login(req, res) {
   }
 }
 
-/**
- * GET /api/auth/me
- * Get current authenticated user
- */
+// get current user
 async function me(req, res) {
   return res.json({ user: req.user });
 }
 
-/**
- * POST /api/auth/logout
- * Clear auth cookie
- */
+// logout
 async function logout(req, res) {
   res.clearCookie("token", { path: "/" });
   return res.json({ message: "Logged out successfully" });
 }
 
-/**
- * GET /api/auth/google/callback
- * Handle Google OAuth callback
- */
+// google callback
 async function googleAuthCallback(req, res) {
   try {
     const user = req.user;
@@ -148,13 +131,13 @@ async function googleAuthCallback(req, res) {
       return res.redirect(`${redirectUrl}/login.html?error=Google auth failed`);
     }
 
-    // Generate token
+    // make token
     const token = generateToken({ userId: user.id, email: user.email });
 
-    // Set cookie
+    // set cookie
     res.cookie("token", token, cookieOptions);
 
-    // Redirect to frontend with token
+    // redirect
     const redirectUrl = process.env.CLIENT_URL || "http://localhost:5500";
     return res.redirect(`${redirectUrl}/login.html?token=${token}`);
   } catch (error) {
