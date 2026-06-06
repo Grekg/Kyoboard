@@ -1,5 +1,3 @@
-/* Login Page CSS */
-
 .login-container {
   min-height: 100vh;
   display: flex;
@@ -19,7 +17,7 @@
   max-width: 440px;
   padding: 2.5rem;
   border-radius: var(--radius-lg);
-  background: rgba(31, 41, 55, 0.85); /* Slightly more opaque */
+  background: rgba(31, 41, 55, 0.85);
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
 }
 

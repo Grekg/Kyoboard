@@ -159,26 +159,27 @@ function initializeSocket(io) {
     // canvas stroke
     socket.on("canvas-stroke", (strokeData) => {
       if (!currentBoardId) return;
+      const boardIdToSave = currentBoardId;
 
       // broadcast stroke
-      socket.to(currentBoardId).emit("canvas-stroke", {
+      socket.to(boardIdToSave).emit("canvas-stroke", {
         ...strokeData,
         odId: socket.user.id,
       });
 
       // queue save
-      if (!canvasPendingStrokes.has(currentBoardId)) {
-        canvasPendingStrokes.set(currentBoardId, []);
+      if (!canvasPendingStrokes.has(boardIdToSave)) {
+        canvasPendingStrokes.set(boardIdToSave, []);
       }
-      canvasPendingStrokes.get(currentBoardId).push(strokeData);
+      canvasPendingStrokes.get(boardIdToSave).push(strokeData);
 
       // batch timer
-      if (!canvasBatchTimers.has(currentBoardId)) {
+      if (!canvasBatchTimers.has(boardIdToSave)) {
         const timer = setTimeout(async () => {
-          await saveCanvasStrokes(currentBoardId);
-          canvasBatchTimers.delete(currentBoardId);
+          await saveCanvasStrokes(boardIdToSave);
+          canvasBatchTimers.delete(boardIdToSave);
         }, 5000);
-        canvasBatchTimers.set(currentBoardId, timer);
+        canvasBatchTimers.set(boardIdToSave, timer);
       }
     });
 
@@ -203,6 +204,9 @@ function initializeSocket(io) {
         ...updateData,
         odId: socket.user.id,
       });
+
+      // update element in db
+      updateCanvasElement(currentBoardId, updateData);
     });
 
     // clear canvas
@@ -262,40 +266,41 @@ function initializeSocket(io) {
     // update notes
     socket.on("notes-update", (content) => {
       if (!currentBoardId) return;
+      const boardIdToSave = currentBoardId;
 
       // broadcast stroke
-      socket.to(currentBoardId).emit("notes-update", {
+      socket.to(boardIdToSave).emit("notes-update", {
         content,
         odId: socket.user.id,
         username: socket.user.username,
       });
 
       // debounce save
-      if (notesDebounce.has(currentBoardId)) {
-        clearTimeout(notesDebounce.get(currentBoardId));
+      if (notesDebounce.has(boardIdToSave)) {
+        clearTimeout(notesDebounce.get(boardIdToSave));
       }
 
       const timer = setTimeout(async () => {
         try {
           await prisma.sharedNote.upsert({
-            where: { boardId: currentBoardId },
+            where: { boardId: boardIdToSave },
             update: {
               content,
               lastUpdatedBy: socket.user.id,
             },
             create: {
-              boardId: currentBoardId,
+              boardId: boardIdToSave,
               content,
               lastUpdatedBy: socket.user.id,
             },
           });
-          notesDebounce.delete(currentBoardId);
+          notesDebounce.delete(boardIdToSave);
         } catch (error) {
           console.error("Save notes error:", error);
         }
       }, 500);
 
-      notesDebounce.set(currentBoardId, timer);
+      notesDebounce.set(boardIdToSave, timer);
     });
 
     // update board name
@@ -327,6 +332,16 @@ function initializeSocket(io) {
           odId: socket.user.id,
           username: socket.user.username,
         });
+
+        // force save pending strokes before leaving
+        if (canvasPendingStrokes.has(currentBoardId)) {
+          saveCanvasStrokes(currentBoardId);
+          if (canvasBatchTimers.has(currentBoardId)) {
+            clearTimeout(canvasBatchTimers.get(currentBoardId));
+            canvasBatchTimers.delete(currentBoardId);
+          }
+        }
+
         currentBoardId = null;
       }
     });
@@ -342,6 +357,15 @@ function initializeSocket(io) {
           odId: socket.user.id,
           username: socket.user.username,
         });
+
+        // force save pending strokes before disconnecting
+        if (canvasPendingStrokes.has(currentBoardId)) {
+          saveCanvasStrokes(currentBoardId);
+          if (canvasBatchTimers.has(currentBoardId)) {
+            clearTimeout(canvasBatchTimers.get(currentBoardId));
+            canvasBatchTimers.delete(currentBoardId);
+          }
+        }
       }
     });
   });
@@ -427,6 +451,37 @@ async function saveCanvasElement(boardId, element) {
     });
   } catch (error) {
     console.error("Save canvas element error:", error);
+  }
+}
+
+// update element partially
+async function updateCanvasElement(boardId, updateData) {
+  try {
+    const board = await prisma.board.findUnique({
+      where: { id: boardId },
+      select: { canvasState: true },
+    });
+
+    const currentState = board?.canvasState || { strokes: [], elements: [] };
+    if (!currentState.elements) return;
+
+    // find and merge
+    const existingIndex = currentState.elements.findIndex(
+      (e) => e.id === updateData.id,
+    );
+    if (existingIndex >= 0) {
+      currentState.elements[existingIndex] = {
+        ...currentState.elements[existingIndex],
+        ...updateData
+      };
+
+      await prisma.board.update({
+        where: { id: boardId },
+        data: { canvasState: currentState },
+      });
+    }
+  } catch (error) {
+    console.error("Update canvas element error:", error);
   }
 }
 
